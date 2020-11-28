@@ -1,0 +1,11 @@
+{
+  "name": "ca1",
+  "version": "1.0.0",
+  "description": "BED Mid-Semester Assignment",
+  "main": "src/server.js",
+  "scripts": {
+    "test": "nodemon --exitcrash src/server.js"
+  },
+  "author": "Ethan Tan",
+  "license": "ISC"
+}
