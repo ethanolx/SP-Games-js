@@ -1,8 +1,8 @@
-# Assignment Brief
-*.docx
-
 # Dependencies
 node_modules
 
 # VSCode Configurations
 .vscode
+
+# Misc
+logs

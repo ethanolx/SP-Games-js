@@ -1,10 +1,11 @@
 {
-  "name": "ca1",
+  "name": "spgames",
   "version": "1.0.0",
   "description": "BED Mid-Semester Assignment",
   "main": "src/server.js",
   "scripts": {
-    "test": "nodemon --exitcrash src/server.js"
+    "test": "nodemon --exitcrash src/server.js",
+    "start": "node ."
   },
   "author": "Ethan Tan",
   "license": "ISC",
@@ -16,5 +17,6 @@
   },
   "devDependencies": {
     "nodemon": "^2.0.6"
-  }
+  },
+  "type": "module"
 }
