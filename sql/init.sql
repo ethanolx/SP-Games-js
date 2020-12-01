@@ -44,5 +44,12 @@ CREATE TABLE games (
 );
 
 CREATE TABLE reviews (
-
+    id INT AUTO_INCREMENT UNIQUE NOT NULL,
+    userid INT NOT NULL,
+    gameid INT NOT NULL,
+    content TEXT NOT NULL,
+    rating FLOAT NOT NULL,
+    PRIMARY KEY (id),
+    FOREIGN KEY (userid) REFERENCES users(id),
+    FOREIGN KEY (gameid) REFERENCES games(id)
 );
