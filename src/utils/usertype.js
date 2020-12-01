@@ -1,0 +1,3 @@
+/**
+ * @typedef {'Admin' | 'Customer'} UserType
+ */
