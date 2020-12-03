@@ -40,5 +40,14 @@ export default {
         const UPDATE_EXISTING_GAME_SQL = 'UPDATE games SET title = ?, description = ?, price = ?, platform = ?, categoryid = ? WHERE id = ?;';
         const { title, description, price, platform, categoryid } = game;
         query(UPDATE_EXISTING_GAME_SQL, callback, [title, description, price, platform, categoryid, gameid]);
+    },
+
+    /**
+     * @param {number} gameid
+     * @param {Callback} callback
+     */
+    delete: (gameid, callback) => {
+        const DELETE_GAME_SQL = 'DELETE FROM games WHERE id = ?;';
+        query(DELETE_GAME_SQL, callback, gameid);
     }
 }

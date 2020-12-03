@@ -1,7 +1,7 @@
 {
   "name": "spgames",
   "version": "1.0.0",
-  "description": "BED Mid-Semester Assignment",
+  "description": "Year 1 / Semester 2 Back-End Web Development Mid-Semester Assignment",
   "main": "src/server.js",
   "scripts": {
     "test": "nodemon --exitcrash src/server.js",
@@ -18,5 +18,13 @@
   "devDependencies": {
     "nodemon": "^2.0.6"
   },
-  "type": "module"
+  "type": "module",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ethanolx/SP-Games-js.git"
+  },
+  "bugs": {
+    "url": "https://github.com/ethanolx/SP-Games-js/issues"
+  },
+  "homepage": "https://github.com/ethanolx/SP-Games-js#readme"
 }
