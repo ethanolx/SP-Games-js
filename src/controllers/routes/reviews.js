@@ -23,6 +23,7 @@ router.route('/game/:id/review')
         }
         Reviews.findByGame(gameid, (err, result) => {
             if (err) {
+                console.log(err);
                 res.sendStatus(500);
             }
             else {
@@ -44,10 +45,11 @@ router.route('/user/:uid/game/:gid/review')
         }
         Reviews.insert(userid, gameid, REVIEW, (err, result) => {
             if (err) {
+                console.log(err);
                 res.sendStatus(500);
             }
             else {
-                res.status(201).json(result);
+                res.status(201).json({ reviewid: result.insertId });
             }
         });
     });

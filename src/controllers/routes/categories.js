@@ -1,6 +1,6 @@
 // Dependencies
 import express from 'express';
-import {json, urlencoded} from 'body-parser';
+import { json, urlencoded } from 'body-parser';
 
 // Model
 import Categories from '../../models/Categories.js';
@@ -10,7 +10,7 @@ const router = express.Router();
 
 // Parsing Middleware
 router.use(json());
-router.use(urlencoded({extended: false}));
+router.use(urlencoded({ extended: false }));
 
 // Route Handlers
 router.route('/category')
@@ -19,7 +19,8 @@ router.route('/category')
         const CATEGORY = req.body;
         Categories.insert(CATEGORY, (err, result) => {
             if (err) {
-                res.sendStatus(422);
+                console.log(err);
+                res.sendStatus(err.code === 'ER_DUP_ENTRY' ? 422 : 500);
             }
             else {
                 //@ts-ignore
@@ -32,7 +33,7 @@ router.route('/category/:id')
     .put((req, res) => {
         /**@type {import('../../models/Categories.js').Category} */
         const CATEGORY = req.body;
-        const {id} = req.params;
+        const { id } = req.params;
         const categoryid = parseInt(id);
         if (isNaN(categoryid)) {
             res.sendStatus(400);
@@ -40,7 +41,8 @@ router.route('/category/:id')
         }
         Categories.update(CATEGORY, categoryid, (err, result) => {
             if (err) {
-                res.sendStatus(422);
+                console.log(err);
+                res.sendStatus(err.code === 'ER_DUP_ENTRY' ? 422 : 500);
             }
             else {
                 res.sendStatus(204);

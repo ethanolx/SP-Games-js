@@ -6,9 +6,9 @@ import '../utils/callback.js';
  * @property {string} title
  * @property {string} description
  * @property {number} price
- * @property {string} platform
+ * @property {string} platforms
  * @property {number} categoryid
- * @property {Date} year
+ * @property {number} year
  */
 
 export default {
@@ -17,7 +17,7 @@ export default {
      * @param {Callback} callback
      */
     findByPlatform: (platform, callback) => {
-        const GET_ALL_GAMES_BY_PLATFORM_SQL = 'SELECT * FROM games WHERE platform = ?;';
+        const GET_ALL_GAMES_BY_PLATFORM_SQL = 'SELECT games.id as gameid, title, games.description as description, price, platforms, games.categoryid as catid, categories.catname as catname, year, games.created_at as created_at FROM games INNER JOIN categories ON games.categoryid = categories.id WHERE FIND_IN_SET(?, platforms) > 0;';
         query(GET_ALL_GAMES_BY_PLATFORM_SQL, callback, platform);
     },
 
@@ -26,9 +26,9 @@ export default {
      * @param {Callback} callback
      */
     insert: (game, callback) => {
-        const CREATE_NEW_GAME_SQL = 'INSERT INTO games (title, description, price, platform, categoryid) VALUES (?, ?, ?, ?);';
-        const { title, description, price, platform, categoryid } = game;
-        query(CREATE_NEW_GAME_SQL, callback, [title, description, price, platform, categoryid]);
+        const CREATE_NEW_GAME_SQL = 'INSERT INTO games (title, description, price, platforms, categoryid, year) VALUES (?, ?, ?, ?, ?, ?);';
+        const { title, description, price, platforms, categoryid, year } = game;
+        query(CREATE_NEW_GAME_SQL, callback, [title, description, price, platforms, categoryid, year]);
     },
 
     /**
@@ -37,9 +37,9 @@ export default {
      * @param {Callback} callback
      */
     update: (game, gameid, callback) => {
-        const UPDATE_EXISTING_GAME_SQL = 'UPDATE games SET title = ?, description = ?, price = ?, platform = ?, categoryid = ? WHERE id = ?;';
-        const { title, description, price, platform, categoryid } = game;
-        query(UPDATE_EXISTING_GAME_SQL, callback, [title, description, price, platform, categoryid, gameid]);
+        const UPDATE_EXISTING_GAME_SQL = 'UPDATE games SET title = ?, description = ?, price = ?, platforms = ?, categoryid = ?, year = ? WHERE id = ?;';
+        const { title, description, price, platforms, categoryid, year } = game;
+        query(UPDATE_EXISTING_GAME_SQL, callback, [title, description, price, platforms, categoryid, year, gameid]);
     },
 
     /**

@@ -1,6 +1,6 @@
 // Dependencies
 import express from 'express';
-import {json, urlencoded} from 'body-parser';
+import { json, urlencoded } from 'body-parser';
 
 // Model
 import Users from '../../models/Users.js';
@@ -10,13 +10,14 @@ const router = express.Router();
 
 // Parsing Middleware
 router.use(json());
-router.use(urlencoded({extended: false}));
+router.use(urlencoded({ extended: false }));
 
 // Route Handlers
 router.route('/users')
     .get((req, res) => {
         Users.findAll((err, result) => {
             if (err) {
+                console.log(err);
                 res.sendStatus(500);
             }
             else if (result === null) {
@@ -32,11 +33,12 @@ router.route('/users')
         const USER = req.body;
         Users.insert(USER, (err, result) => {
             if (err) {
+                console.log(err);
                 res.sendStatus(500);
             }
             else {
                 //@ts-ignore
-                res.status(201).json({'Affected Rows': result.affectedRows});
+                res.status(201).json({ userid: result.insertId });
             }
         });
     });
@@ -49,6 +51,7 @@ router.route('/users/:id')
         }
         Users.findOne(USERID, (err, result) => {
             if (err) {
+                console.log(err);
                 res.sendStatus(500);
             }
             else if (result === null) {

@@ -3,7 +3,7 @@ import '../utils/callback.js';
 
 /**
  * @typedef {Object} Category
- * @property {string} catname,
+ * @property {string} catname
  * @property {string} description
  */
 
@@ -14,7 +14,7 @@ export default {
      */
     insert: (category, callback) => {
         const CREATE_NEW_CATEGORY_SQL = 'INSERT INTO categories (catname, description) VALUES (?, ?);';
-        const {catname, description} = category;
+        const { catname, description } = category;
         query(CREATE_NEW_CATEGORY_SQL, callback, [catname, description]);
     },
 

@@ -19,20 +19,22 @@ router.route('/game')
         const GAME = req.body;
         Games.insert(GAME, (err, result) => {
             if (err) {
+                console.log(err);
                 res.sendStatus(500);
             }
             else {
                 //@ts-ignore
-                res.status(201).json({ 'Affected Rows': result.affectedRows });
+                res.status(201).json({ gameid: result.insertId });
             }
         });
     });
 
 router.route('/games/:platform')
     .get((req, res) => {
-        const {platform} = req.params;
+        const { platform } = req.params;
         Games.findByPlatform(platform, (err, result) => {
             if (err) {
+                console.log(err);
                 res.sendStatus(500);
             }
             else {
@@ -45,7 +47,7 @@ router.route('/game/:id')
     .put((req, res) => {
         /**@type {import('../../models/Games.js').Game} */
         const GAME = req.body;
-        const {id} = req.params;
+        const { id } = req.params;
         const gameid = parseInt(id);
         if (isNaN(gameid)) {
             res.sendStatus(400);
@@ -53,16 +55,17 @@ router.route('/game/:id')
         }
         Games.update(GAME, gameid, (err, result) => {
             if (err) {
+                console.log(err);
                 res.sendStatus(500);
             }
             else {
                 //@ts-ignore
-                res.status(201).json(result.affectedRows);
+                res.status(201).json({ 'Affected Rows': result.affectedRows });
             }
         });
     })
     .delete((req, res) => {
-        const {id} = req.params;
+        const { id } = req.params;
         const gameid = parseInt(id);
         if (isNaN(gameid)) {
             res.sendStatus(400);
@@ -70,6 +73,7 @@ router.route('/game/:id')
         }
         Games.delete(gameid, (err, result) => {
             if (err) {
+                console.log(err);
                 res.sendStatus(500);
             }
             else {

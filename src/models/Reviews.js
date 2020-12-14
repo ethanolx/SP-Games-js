@@ -1,5 +1,5 @@
 import query from '../utils/query.js';
-import '../utils/callback';
+import '../utils/callback.js';
 
 /**
  * @typedef {Object} Review
@@ -13,7 +13,7 @@ export default {
      * @param {Callback} callback
      */
     findByGame: (gameid, callback) => {
-        const GET_REVIEWS_BY_GAME_SQL = 'SELECT * FROM reviews WHERE gameid = ?;';
+        const GET_REVIEWS_BY_GAME_SQL = 'SELECT games.id as gameid, content, rating, username, reviews.created_at FROM ((reviews INNER JOIN games ON reviews.gameid = games.id) INNER JOIN users ON reviews.userid = users.userid) WHERE gameid = ?;';
         query(GET_REVIEWS_BY_GAME_SQL, callback, gameid);
     },
 
@@ -24,7 +24,7 @@ export default {
      * @param {Callback} callback
      */
     insert: (userid, gameid, review, callback) => {
-        const CREATE_NEW_REVIEW_SQL = 'INSERT INTO reviews (username, gameid, content, rating) VALUES (?, ?, ?, ?);';
+        const CREATE_NEW_REVIEW_SQL = 'INSERT INTO reviews (userid, gameid, content, rating) VALUES (?, ?, ?, ?);';
         query(CREATE_NEW_REVIEW_SQL, callback, [userid, gameid, review.content, review.rating]);
     }
 }
