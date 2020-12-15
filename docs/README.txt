@@ -1,0 +1,1 @@
+FOR further details, refer to README.md

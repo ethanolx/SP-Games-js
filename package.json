@@ -4,7 +4,7 @@
   "description": "Year 1 / Semester 2 Back-End Web Development Mid-Semester Assignment",
   "main": "src/server.js",
   "scripts": {
-    "test": "nodemon --exitcrash src/server.js",
+    "test": "nodemon --exitcrash --trace-warnings src/server.js",
     "start": "node ."
   },
   "author": "Ethan Tan",
@@ -12,8 +12,11 @@
   "dependencies": {
     "body-parser": "^1.19.0",
     "express": "^4.17.1",
+    "fs": "0.0.1-security",
     "mysql": "^2.18.1",
-    "mysql2": "^2.2.5"
+    "mysql2": "^2.2.5",
+    "path": "^0.12.7",
+    "util": "^0.12.3"
   },
   "devDependencies": {
     "nodemon": "^2.0.6"

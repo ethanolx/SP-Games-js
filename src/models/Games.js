@@ -37,9 +37,8 @@ export default {
      * @param {Callback} callback
      */
     update: (game, gameid, callback) => {
-        const UPDATE_EXISTING_GAME_SQL = 'UPDATE games SET title = ?, description = ?, price = ?, platforms = ?, categoryid = ?, year = ? WHERE id = ?;';
-        const { title, description, price, platforms, categoryid, year } = game;
-        query(UPDATE_EXISTING_GAME_SQL, callback, [title, description, price, platforms, categoryid, year, gameid]);
+        const UPDATE_EXISTING_GAME_SQL = 'UPDATE games SET ? WHERE id = ?;';
+        query(UPDATE_EXISTING_GAME_SQL, callback, [game, gameid]);
     },
 
     /**

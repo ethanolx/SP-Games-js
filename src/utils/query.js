@@ -1,11 +1,12 @@
 import getConnection from '../config/connection.js';
+import { logError, logHistory } from '../utils/logErrsAndHist.js';
 import './callback.js';
 
 /**
  * @param {string} sql
  * @param {Callback} fn
  * @param {any} [params]
- * @param {Callback} [customFn]
+ * @param {Callback | null} [customFn]
  * @returns {void}
  */
 export default (sql, fn, params = null, customFn = null) => {
@@ -13,30 +14,46 @@ export default (sql, fn, params = null, customFn = null) => {
     conn.connect(connErr => {
         if (connErr) {
             console.log(connErr);
+            logError(connErr);
             conn.end();
         }
         else {
+            /** @type {import('mysql2/typings/mysql/lib/protocol/sequences/Query')} */
+            let query;
             if (customFn === null) {
-                conn.query(sql, params, (queryErr, result) => {
+                query = conn.query(sql, params, (queryErr, result) => {
                     conn.end();
                     if (queryErr) {
+                        logError(queryErr);
+                        logHistory(query.sql, false, {
+                            user: conn.config.user || '',
+                            database: conn.config.database || ''
+                        });
                         return fn(queryErr, null);
                     }
                     // @ts-ignore
                     else if (Object.keys(result).includes('length') && (result.length === 0)) {
+                        logHistory(query.sql, true, {
+                            user: conn.config.user || '',
+                            database: conn.config.database || ''
+                        });
                         return fn(null, null);
                     }
                     else {
+                        logHistory(query.sql, true, {
+                            user: conn.config.user || '',
+                            database: conn.config.database || ''
+                        });
                         return fn(null, result);
                     }
                 });
             }
             else {
-                conn.query(sql, params, (queryErr, result) => {
+                query = conn.query(sql, params, (queryErr, result) => {
                     conn.end();
                     return customFn(queryErr, result);
                 });
             }
         }
     });
-}
+};

@@ -5,13 +5,6 @@ CREATE DATABASE spgames;
 
 USE spgames;
 
--- temporary mysql user initialisation --
-DROP USER IF EXISTS 'tmp' @'localhost';
-
-CREATE USER 'tmp' @'localhost' IDENTIFIED BY '12435Abc';
-
-GRANT ALL PRIVILEGES ON spgames.* TO 'tmp' @'localhost';
-
 -- tables initialisation --
 CREATE TABLE users (
     userid INT AUTO_INCREMENT UNIQUE NOT NULL,

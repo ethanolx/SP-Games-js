@@ -24,7 +24,7 @@ export default {
      * @param {Callback} callback
      */
     update: (category, catid, callback) => {
-        const UPDATE_EXISTING_CATEGORY_SQL = 'UPDATE categories SET catname = ?, description = ? WHERE id = ?;';
-        query(UPDATE_EXISTING_CATEGORY_SQL, callback, [category.catname, category.description, catid]);
+        const UPDATE_EXISTING_CATEGORY_SQL = 'UPDATE categories SET ? WHERE id = ?;';
+        query(UPDATE_EXISTING_CATEGORY_SQL, callback, [category, catid]);
     }
 }
