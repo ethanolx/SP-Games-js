@@ -9,7 +9,7 @@ export default async () => {
         method: 'DELETE'
     })
         .then(res => {
-            const MESSAGE = `DELETE /game/:id | Status: ${ res.status }`;
+            const MESSAGE = `8. DELETE /game/:id | Status: ${ res.status }`;
             return ((res.status >= 400) ? colors.red(MESSAGE + ` | ${ getCurrentDateTime() }.log`) : colors.green(MESSAGE));
         })
         .catch(emptyCallback);

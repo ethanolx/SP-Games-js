@@ -9,7 +9,7 @@ export default async () => {
         method: 'GET'
     })
         .then(res => {
-            const MESSAGE = `GET /games/:platform | Status: ${ res.status }`;
+            const MESSAGE = `7. GET /games/:platform | Status: ${ res.status }`;
             return ((res.status >= 400) ? colors.red(MESSAGE + ` | ${getCurrentDateTime()}.log`) : colors.green(MESSAGE));
         })
         .catch(emptyCallback);

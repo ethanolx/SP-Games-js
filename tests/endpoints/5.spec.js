@@ -5,17 +5,17 @@ import { emptyCallback } from '../../src/utils/callbacks.js';
 import getCurrentDateTime from '../../src/utils/getCurrentDateTime.js';
 
 export default async () => {
-    return fetch(`http://${ HOST }:${ TEST_PORT }/category/1`, {
+    return fetch(`http://${ HOST }:${ TEST_PORT }/category/3`, {
         method: 'PUT',
         body: JSON.stringify({
             catname: "Action",
-            description: "An action game emphasizes physical challenges, including hand–eye coordination and reaction- time"
+            description: "Rife with, you guessed it, action..."
         }),
         headers: { 'Content-Type': 'application/json' }
     })
         .then(res => {
-            const MESSAGE = `PUT /category/:id | Status: ${ res.status }`;
-            return ((res.status >= 400) ? colors.red(MESSAGE + ` | ${getCurrentDateTime()}.log`) : colors.green(MESSAGE));
+            const MESSAGE = `5. PUT /category/:id | Status: ${ res.status }`;
+            return ((res.status >= 400) ? colors.red(MESSAGE + ` | ${ getCurrentDateTime() }.log`) : colors.green(MESSAGE));
         })
         .catch(emptyCallback);
 };

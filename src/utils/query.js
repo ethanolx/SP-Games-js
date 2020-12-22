@@ -12,7 +12,6 @@ export default (sql, fn, params = null, customFn = null) => {
     const conn = getConnection();
     conn.connect(connErr => {
         if (connErr) {
-            console.log(connErr);
             logError(connErr);
             conn.end();
         }
@@ -21,38 +20,35 @@ export default (sql, fn, params = null, customFn = null) => {
             let query;
             if (customFn === null) {
                 query = conn.query(sql, params, (queryErr, result) => {
+                    logHistory(query.sql, (queryErr ? false : true), {
+                        user: conn.config.user || 'unknown',
+                        database: conn.config.database || 'unknown'
+                    });
                     conn.end();
                     if (queryErr) {
                         logError(queryErr);
-                        logHistory(query.sql, false, {
-                            user: conn.config.user || '',
-                            database: conn.config.database || ''
-                        });
                         return fn(queryErr, null);
                     }
                     // @ts-ignore
                     else if (Object.keys(result).includes('length') && (result.length === 0)) {
-                        logHistory(query.sql, true, {
-                            user: conn.config.user || '',
-                            database: conn.config.database || ''
-                        });
                         return fn(null, null);
                     }
                     else {
-                        logHistory(query.sql, true, {
-                            user: conn.config.user || '',
-                            database: conn.config.database || ''
-                        });
                         return fn(null, result);
                     }
                 });
             }
             else {
                 query = conn.query(sql, params, (queryErr, result) => {
+                    logHistory(query.sql, (queryErr ? false : true), {
+                        user: conn.config.user || 'unknown',
+                        database: conn.config.database || 'unknown'
+                    });
                     conn.end();
                     return customFn(queryErr, result);
                 });
             }
+
         }
     });
 };

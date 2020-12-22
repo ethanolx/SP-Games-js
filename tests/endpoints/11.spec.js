@@ -5,10 +5,10 @@ import { emptyCallback } from '../../src/utils/callbacks.js';
 import getCurrentDateTime from '../../src/utils/getCurrentDateTime.js';
 
 export default async () => {
-    return fetch(`http://${ HOST }:${ TEST_PORT }/users`)
+    return fetch(`http://${ HOST }:${ TEST_PORT }/game/1/review`)
         .then(res => {
-            const MESSAGE = `GET /users | Status: ${ res.status }`;
-            return ((res.status >= 400) ? colors.red(MESSAGE + ` | ${getCurrentDateTime()}.log`) : colors.green(MESSAGE));
+            const MESSAGE = `11. GET /game/:id/review | Status: ${ res.status }`;
+            return ((res.status >= 400) ? colors.red(MESSAGE + ` | ${ getCurrentDateTime() }.log`) : colors.green(MESSAGE));
         })
         .catch(emptyCallback);
 };

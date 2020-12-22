@@ -18,7 +18,7 @@ export default async () => {
         headers: { 'Content-Type': 'application/json' }
     })
         .then(res => {
-            const MESSAGE = `POST /game | Status: ${ res.status }`;
+            const MESSAGE = `6. POST /game | Status: ${ res.status }`;
             return ((res.status >= 400) ? colors.red(MESSAGE + ` | ${getCurrentDateTime()}.log`) : colors.green(MESSAGE));
         })
         .catch(emptyCallback);

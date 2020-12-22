@@ -9,7 +9,7 @@ export default async () => {
         method: 'GET'
     })
         .then(res => {
-            const MESSAGE = `GET /users/:id | Status: ${ res.status }`;
+            const MESSAGE = `3. GET /users/:id | Status: ${ res.status }`;
             return ((res.status >= 400) ? colors.red(MESSAGE + ` | ${getCurrentDateTime()}.log`) : colors.green(MESSAGE));
         })
         .catch(emptyCallback);
