@@ -19,7 +19,6 @@ router.route('/category')
         const CATEGORY = req.body;
         Categories.insert(CATEGORY, (err, result) => {
             if (err) {
-                console.log(err);
                 res.sendStatus(err.code === 'ER_DUP_ENTRY' ? 422 : 500);
             }
             else {
@@ -41,7 +40,6 @@ router.route('/category/:id')
         }
         Categories.update(CATEGORY, categoryid, (err, result) => {
             if (err) {
-                console.log(err);
                 res.sendStatus(err.code === 'ER_DUP_ENTRY' ? 422 : 500);
             }
             else {

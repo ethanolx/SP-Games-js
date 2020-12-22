@@ -1,0 +1,9 @@
+import query from '../../utils/query.js';
+import { emptyCallback } from '../../utils/callbacks.js';
+
+export default {
+    removeDuplicateRows: () => {
+        const DELETE_DUPLICATES_SQL = 'DELETE t1 FROM game_category_asc AS t1 INNER JOIN game_category_asc AS t2 WHERE t1.id > t2.id AND t1.gameid = t2.gameid AND t1.catid = t2.catid;';
+        query(DELETE_DUPLICATES_SQL, emptyCallback);
+    }
+}

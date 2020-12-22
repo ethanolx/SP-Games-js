@@ -17,7 +17,6 @@ router.route('/users')
     .get((req, res) => {
         Users.findAll((err, result) => {
             if (err) {
-                console.log(err);
                 res.sendStatus(500);
             }
             else if (result === null) {
@@ -33,7 +32,6 @@ router.route('/users')
         const USER = req.body;
         Users.insert(USER, (err, result) => {
             if (err) {
-                console.log(err);
                 res.sendStatus(500);
             }
             else {
@@ -51,7 +49,6 @@ router.route('/users/:id')
         }
         Users.findOne(USERID, (err, result) => {
             if (err) {
-                console.log(err);
                 res.sendStatus(500);
             }
             else if (result === null) {

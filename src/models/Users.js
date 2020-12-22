@@ -1,6 +1,4 @@
 import query from '../utils/query.js';
-import '../utils/callback.js';
-import '../utils/usertype.js';
 
 /**
  * @typedef {Object} User
@@ -13,7 +11,7 @@ import '../utils/usertype.js';
 export default {
 
     /**
-     * @param {Callback} callback
+     * @param {import('../utils/callbacks.js').Callback} callback
      */
     findAll: (callback) => {
         const GET_ALL_USERS_SQL = 'SELECT * FROM users;';
@@ -22,7 +20,7 @@ export default {
 
     /**
      * @param {number} userID
-     * @param {Callback} callback
+     * @param {import('../utils/callbacks.js').Callback} callback
      */
     findOne: (userID, callback) => {
         const GET_ONE_USER_BY_ID_SQL = 'SELECT * FROM users WHERE userid = ?;';
@@ -31,11 +29,11 @@ export default {
 
     /**
      * @param {User} user
-     * @param {Callback} callback
+     * @param {import('../utils/callbacks.js').Callback} callback
      */
     insert: (user, callback) => {
         const CREATE_NEW_USER_SQL = 'INSERT INTO users (username, email, type, profile_pic_url) VALUES (?, ?, ?, ?);';
-        const {username, email, type, profile_pic_url} = user;
+        const { username, email, type, profile_pic_url } = user;
         query(CREATE_NEW_USER_SQL, callback, [username, email, type, profile_pic_url]);
     }
-}
+};

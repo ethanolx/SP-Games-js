@@ -1,12 +1,11 @@
-import getConnection from '../config/connection.js';
-import { logError, logHistory } from '../utils/logErrsAndHist.js';
-import './callback.js';
+import getConnection from '../config/database.js';
+import { logError, logHistory } from '../utils/log.js';
 
 /**
  * @param {string} sql
- * @param {Callback} fn
+ * @param {import('./callbacks.js').Callback} fn
  * @param {any} [params]
- * @param {Callback | null} [customFn]
+ * @param {import('./callbacks.js').Callback | null} [customFn]
  * @returns {void}
  */
 export default (sql, fn, params = null, customFn = null) => {

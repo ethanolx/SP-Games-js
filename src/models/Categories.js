@@ -1,5 +1,4 @@
 import query from '../utils/query.js';
-import '../utils/callback.js';
 
 /**
  * @typedef {Object} Category
@@ -9,8 +8,25 @@ import '../utils/callback.js';
 
 export default {
     /**
+     * @param {number} gameid
+     * @param {import('../utils/callbacks.js').Callback} callback
+     */
+    findByGame: (gameid, callback) => {
+        const GET_ALL_CATEGORIES_BY_GAME = 'SELECT categories.id AS catid, catname FROM game_category_asc INNER JOIN categories ON game_category_asc.catid = categories.id WHERE game_category_asc.gameid = ?;';
+        query(GET_ALL_CATEGORIES_BY_GAME, callback, gameid);
+    },
+
+    /**
+     * @param {string} catname
+     * @param {import('../utils/callbacks.js').Callback} callback
+     */
+    findId: (catname, callback) => {
+
+    },
+
+    /**
      * @param {Category} category
-     * @param {Callback} callback
+     * @param {import('../utils/callbacks.js').Callback} callback
      */
     insert: (category, callback) => {
         const CREATE_NEW_CATEGORY_SQL = 'INSERT INTO categories (catname, description) VALUES (?, ?);';
@@ -21,10 +37,10 @@ export default {
     /**
      * @param {Category} category
      * @param {number} catid
-     * @param {Callback} callback
+     * @param {import('../utils/callbacks.js').Callback} callback
      */
     update: (category, catid, callback) => {
         const UPDATE_EXISTING_CATEGORY_SQL = 'UPDATE categories SET ? WHERE id = ?;';
         query(UPDATE_EXISTING_CATEGORY_SQL, callback, [category, catid]);
     }
-}
+};

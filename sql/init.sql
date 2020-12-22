@@ -10,7 +10,7 @@ CREATE TABLE users (
     userid INT AUTO_INCREMENT UNIQUE NOT NULL,
     username VARCHAR(30) UNIQUE NOT NULL,
     email VARCHAR(45) UNIQUE NOT NULL,
-    type ENUM('Customer', 'Admin') NOT NULL,
+    `type` ENUM('Customer', 'Admin') NOT NULL,
     profile_pic_url VARCHAR(80) NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     PRIMARY KEY (userid)
@@ -19,7 +19,7 @@ CREATE TABLE users (
 CREATE TABLE categories (
     id INT AUTO_INCREMENT UNIQUE NOT NULL,
     catname VARCHAR(20) UNIQUE NOT NULL,
-    description TEXT NULL,
+    `description` TEXT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     PRIMARY KEY (id)
 );
@@ -27,14 +27,37 @@ CREATE TABLE categories (
 CREATE TABLE games (
     id INT AUTO_INCREMENT UNIQUE NOT NULL,
     title VARCHAR(25) UNIQUE NOT NULL,
-    description TEXT NULL,
+    `description` TEXT NULL,
     price DECIMAL(5, 2) NOT NULL,
-    platforms SET ('PC', 'Mobile', 'Xbox', 'Nintendo', 'PS') NOT NULL,
-    categoryid INT NOT NULL,
     year INT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    PRIMARY KEY (id)
+);
+
+CREATE TABLE platforms (
+    id INT AUTO_INCREMENT UNIQUE NOT NULL,
+    generic_type VARCHAR(15) NOT NULL,
+    `version` VARCHAR(20) DEFAULT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    PRIMARY KEY (id)
+);
+
+CREATE TABLE game_platform_asc (
+    id INT AUTO_INCREMENT UNIQUE NOT NULL,
+    gameid INT NOT NULL,
+    platformid INT NOT NULL,
     PRIMARY KEY (id),
-    FOREIGN KEY (categoryid) REFERENCES categories(id)
+    FOREIGN KEY (gameid) REFERENCES games(id) ON DELETE CASCADE,
+    FOREIGN KEY (platformid) REFERENCES platforms(id) ON DELETE CASCADE
+);
+
+CREATE TABLE game_category_asc (
+    id INT AUTO_INCREMENT UNIQUE NOT NULL,
+    gameid INT NOT NULL,
+    catid INT NOT NULL,
+    PRIMARY KEY (id),
+    FOREIGN KEY (gameid) REFERENCES games(id) ON DELETE CASCADE,
+    FOREIGN KEY (catid) REFERENCES categories(id) ON DELETE CASCADE
 );
 
 CREATE TABLE reviews (

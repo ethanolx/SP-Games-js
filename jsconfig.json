@@ -1,0 +1,20 @@
+{
+    "compilerOptions": {
+        "target": "es6",
+        "module": "es6",
+        "checkJs": true,
+        "moduleResolution": "node"
+    },
+    "exclude": [
+        "node_modules",
+        "tmp",
+        "assets",
+        "docs",
+        "logs",
+        ".vscode"
+    ],
+    "include": [
+        "src/**/*",
+        "tests/**/*"
+    ]
+}

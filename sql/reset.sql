@@ -1,7 +1,86 @@
--- populate with data --
-USE spgames;
+SET
+    foreign_key_checks = 0;
 
--- users table --
+DROP TABLE IF EXISTS users;
+
+DROP TABLE IF EXISTS categories;
+
+DROP TABLE IF EXISTS platforms;
+
+DROP TABLE IF EXISTS games;
+
+DROP TABLE IF EXISTS reviews;
+
+DROP TABLE IF EXISTS game_category_asc;
+
+DROP TABLE IF EXISTS game_platform_asc;
+
+CREATE TABLE users (
+    userid INT AUTO_INCREMENT UNIQUE NOT NULL,
+    username VARCHAR(30) UNIQUE NOT NULL,
+    email VARCHAR(45) UNIQUE NOT NULL,
+    `type` ENUM('Customer', 'Admin') NOT NULL,
+    profile_pic_url VARCHAR(80) NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    PRIMARY KEY (userid)
+);
+
+CREATE TABLE categories (
+    id INT AUTO_INCREMENT UNIQUE NOT NULL,
+    catname VARCHAR(20) UNIQUE NOT NULL,
+    `description` TEXT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    PRIMARY KEY (id)
+);
+
+CREATE TABLE games (
+    id INT AUTO_INCREMENT UNIQUE NOT NULL,
+    title VARCHAR(25) UNIQUE NOT NULL,
+    `description` TEXT NULL,
+    price DECIMAL(5, 2) NOT NULL,
+    year INT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    PRIMARY KEY (id)
+);
+
+CREATE TABLE platforms (
+    id INT AUTO_INCREMENT UNIQUE NOT NULL,
+    generic_type VARCHAR(15) NOT NULL,
+    `version` VARCHAR(20) DEFAULT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    PRIMARY KEY (id)
+);
+
+CREATE TABLE game_platform_asc (
+    id INT AUTO_INCREMENT UNIQUE NOT NULL,
+    gameid INT NOT NULL,
+    platformid INT NOT NULL,
+    PRIMARY KEY (id),
+    FOREIGN KEY (gameid) REFERENCES games(id) ON DELETE CASCADE,
+    FOREIGN KEY (platformid) REFERENCES platforms(id) ON DELETE CASCADE
+);
+
+CREATE TABLE game_category_asc (
+    id INT AUTO_INCREMENT UNIQUE NOT NULL,
+    gameid INT NOT NULL,
+    catid INT NOT NULL,
+    PRIMARY KEY (id),
+    FOREIGN KEY (gameid) REFERENCES games(id) ON DELETE CASCADE,
+    FOREIGN KEY (catid) REFERENCES categories(id) ON DELETE CASCADE
+);
+
+CREATE TABLE reviews (
+    reviewid INT AUTO_INCREMENT UNIQUE NOT NULL,
+    userid INT NOT NULL,
+    gameid INT NOT NULL,
+    content TEXT NOT NULL,
+    rating DECIMAL(3, 1) NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    PRIMARY KEY (reviewid),
+    FOREIGN KEY (userid) REFERENCES users(userid),
+    FOREIGN KEY (gameid) REFERENCES games(id) ON DELETE CASCADE
+);
+
 DELETE FROM
     users;
 
@@ -12,7 +91,6 @@ VALUES
     ('jsx', 'johnsmith@x.net', 'Customer'),
     ('xox', 'bobby@abc.mail', 'Customer');
 
--- categories table --
 DELETE FROM
     categories;
 
@@ -28,7 +106,6 @@ VALUES
         'You play from the perspective of the protagonist, fulfilling objectives to win'
     );
 
--- games table --
 DELETE FROM
     games;
 
@@ -48,7 +125,6 @@ VALUES
         2019
     );
 
--- platforms table --
 DELETE FROM
     platforms;
 
@@ -58,7 +134,6 @@ VALUES
     ('PC', NULL),
     ('Xbox', 'One');
 
--- game_platform_asc table --
 DELETE FROM
     game_platform_asc;
 
@@ -69,7 +144,6 @@ VALUES
     (1, 2),
     (2, 1);
 
--- game_category_asc table --
 DELETE FROM
     game_category_asc;
 
@@ -79,7 +153,6 @@ VALUES
     (1, 2),
     (2, 1);
 
--- reviews table --
 DELETE FROM
     reviews;
 

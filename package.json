@@ -1,33 +1,37 @@
 {
-  "name": "spgames",
-  "version": "1.0.0",
-  "description": "Year 1 / Semester 2 Back-End Web Development Mid-Semester Assignment",
-  "main": "src/server.js",
-  "scripts": {
-    "test": "nodemon --exitcrash --trace-warnings src/server.js",
-    "start": "node ."
-  },
-  "author": "Ethan Tan",
-  "license": "ISC",
-  "dependencies": {
-    "body-parser": "^1.19.0",
-    "express": "^4.17.1",
-    "fs": "0.0.1-security",
-    "mysql": "^2.18.1",
-    "mysql2": "^2.2.5",
-    "path": "^0.12.7",
-    "util": "^0.12.3"
-  },
-  "devDependencies": {
-    "nodemon": "^2.0.6"
-  },
-  "type": "module",
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/ethanolx/SP-Games-js.git"
-  },
-  "bugs": {
-    "url": "https://github.com/ethanolx/SP-Games-js/issues"
-  },
-  "homepage": "https://github.com/ethanolx/SP-Games-js#readme"
+    "name": "spgames",
+    "version": "1.0.0",
+    "description": "Year 1 / Semester 2 Back-End Web Development Mid-Semester Assignment",
+    "main": "src/server.js",
+    "scripts": {
+        "test": "node tests/test.spec.js",
+        "start:dev": "nodemon --exitcrash --trace-warnings src/server.js",
+        "start": "node ."
+    },
+    "author": "Ethan Tan",
+    "license": "ISC",
+    "dependencies": {
+        "body-parser": "^1.19.0",
+        "colors": "^1.4.0",
+        "express": "^4.17.1",
+        "fs": "0.0.1-security",
+        "multer": "^1.4.2",
+        "mysql": "^2.18.1",
+        "mysql2": "^2.2.5",
+        "node-fetch": "^2.6.1",
+        "path": "^0.12.7",
+        "util": "^0.12.3"
+    },
+    "devDependencies": {
+        "nodemon": "^2.0.6"
+    },
+    "type": "module",
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/ethanolx/SP-Games-js.git"
+    },
+    "bugs": {
+        "url": "https://github.com/ethanolx/SP-Games-js/issues"
+    },
+    "homepage": "https://github.com/ethanolx/SP-Games-js#readme"
 }
