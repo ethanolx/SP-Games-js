@@ -3,11 +3,16 @@ import express, { json, urlencoded } from 'express';
 import fetch from 'node-fetch';
 import multer from 'multer';
 import { extname } from 'path';
-import { findImagesOfGame, removeImages } from '../../utils/imageMgmtUtils.js';
-import { logError } from '../../utils/log.js';
+import { promisify } from 'util';
+import { readFile } from 'fs';
+import { findImagesOfGame, removePrevImage } from '../../utils/imageMgmtUtils.js';
+import { logError } from '../../utils/logs.js';
 
 // Model
 import Games from '../../models/Games.js';
+
+// Configurations
+import { HOST, PORT } from '../../config/server.js';
 
 /**@type {express.Router} */
 const router = express.Router();
@@ -100,38 +105,71 @@ const IMAGE_STORAGE = multer({
     }
 });
 
+// Image Uploads
 router.route('/game/:gid/image')
     .get((req, res) => {
         (async () => {
-            const FILE = (await findImagesOfGame(parseInt(req.params.gid)))[0];
-            res.sendFile(FILE, { root: './assets/game-images' }, (err) => { if (err) logError(err); });
+            const FILES = (await findImagesOfGame(parseInt(req.params.gid)).catch(_ => { }));
+            if (FILES) {
+                res.status(200).sendFile(FILES[0], { root: './assets/game-images' }, (err) => { if (err) logError(err); });
+            }
+            else {
+                res.sendStatus(404);
+            }
+        })();
+    })
+    .post((req, res, next) => {
+        (async () => {
+            const { gid } = req.params;
+            const GAME_ID = parseInt(gid);
+            if (isNaN(GAME_ID)) {
+                res.status(400).json({ message: 'Invalid game id' });
+                return;
+            }
+            const FILES = (await findImagesOfGame(parseInt(req.params.gid)).catch(_ => { }));
+            if (FILES) {
+                removePrevImage(GAME_ID);
+            }
+            next();
         })();
     })
     .post(IMAGE_STORAGE.single('gameImage'))
     .post((req, res) => {
-        removeImages(parseInt(req.params.gid));
         res.sendStatus(204);
     });
 
 router.route('/game/:gid/image/info')
     .get((req, res) => {
         const GAMEID = req.params.gid;
-        (async () => {
-            fetch(`http://localhost:3000/game/${ GAMEID }/image`, { method: 'GET' }).then(r => r.headers).then(headers => `
-            <h1>Game ${ GAMEID }</h1>
-            <img src=\"http://localhost:3000/game/${ GAMEID }/image\" width=100vw/>
-            <table>
-                <tr>
-                    <th>File Name</th>
-                    <td>h</td>
-                </tr>
-                <tr>
-                    <th>Hello</th>
-                    <td>Noe</td>
-                </tr>
-            </table>
-        `).then(res.status(200).type('html').send).catch(console.log);
-        })();
+        fetch(`http://${ HOST }:${ PORT }/game/${ GAMEID }/image`, { method: 'GET' })
+            .then(resp => {
+                switch (resp.status) {
+                    case 200:
+                        resp.blob().then(async IMAGE_FILE => {
+                            const TEMPLATE_OR_VOID = (await promisify(readFile)('./assets/game-image-info.html').catch(logError));
+                            const TEMPLATE = (TEMPLATE_OR_VOID ? TEMPLATE_OR_VOID.toString()
+                                .replace(/\$gid\$/g, GAMEID)
+                                .replace(/\$size\$/, IMAGE_FILE.size.toString())
+                                .replace(/\$type\$/, IMAGE_FILE.type) : '');
+                            res.status(200).type('html').send(TEMPLATE);
+                            return;
+                        }).catch(logError);
+                    case 404:
+                        res.status(404).type('html').send(
+                            `<h1 color="red">Image for game with id ${ GAMEID } does not exist</h1>`
+                        );
+                        return;
+                    case 400:
+                        res.status(400).type('html').send(
+                            `<h1 color="red">${ GAMEID } is not a valid game id</h1>`
+                        );
+                    default:
+                        res.status(204).type('html').send(
+                            `<h1>Nothing to send</h1>`
+                        );
+                }
+            })
+            .catch(logError);
     });
 
 export default router;

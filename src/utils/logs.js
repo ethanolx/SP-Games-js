@@ -1,17 +1,23 @@
 import { promisify } from 'util';
 import { writeFile, readdir, unlink } from 'fs';
 import { extname, join } from 'path';
+import {MAX_ERROR_LOGS, MAX_HISTORY_LOGS} from '../config/server.js';
 import getCurrentDateTime from './getCurrentDateTime.js';
 
 /**
+ * Used to generate log files for the following:
+ * * Errors
+ * * MySQL Queries
+ *
+ * The log files can be found in 'logs/error' and 'logs/history' respectively
  * @param {string} data
  * @param {string} logFileDir
  * @param {number} limit
  */
 async function log(data, logFileDir, limit) {
     const NEW_LOG_ENTRY = `${ getCurrentDateTime() }`;
-    trimLogs(logFileDir, limit);
     promisify(writeFile)(join(logFileDir, NEW_LOG_ENTRY) + '.log', data, { flag: 'wx' }).catch(_ => {});
+    trimLogs(logFileDir, limit);
 }
 
 /**
@@ -20,13 +26,13 @@ async function log(data, logFileDir, limit) {
  */
 async function trimLogs(logFileDir, limit) {
     let LOG_FILES = await getFilesInDir(logFileDir, '.log');
-    if (LOG_FILES.length >= limit) {
+    if (LOG_FILES.length > limit) {
         do {
             //@ts-ignore
             promisify(unlink)(join(logFileDir, LOG_FILES.sort((a, b) => a - b)[0])).catch(_ => {});
             LOG_FILES = await getFilesInDir(logFileDir, '.log');
         }
-        while (LOG_FILES.length >= limit);
+        while (LOG_FILES.length > limit);
     }
     return;
 }
@@ -49,7 +55,7 @@ async function getFilesInDir(dir, ext = null) {
 }
 
 /**
- ** don't overuse
+ * don't overuse
  * @param {Error} err
  */
 export const logError = (err) => {
@@ -63,7 +69,7 @@ CODE:\t\t${ err.
             // @ts-ignore
             code || null }
 MESSAGE:\t${ err.message }`;
-    log(RECORD, './logs/error', 8).catch(_ => {});
+    log(RECORD, './logs/error', MAX_ERROR_LOGS).catch(_ => {});
 };
 
 /**
@@ -85,5 +91,5 @@ DATABASE QUERIED:\t${ conn.database }
 -----------------------------
 MYSQL QUERY:\t${ query }
 QUERY STATUS:\t${ success ? 'SUCCESS' : 'FAILURE' }`;
-    log(RECORD, './logs/history', 20).catch(_ => {});
+    log(RECORD, './logs/history', MAX_HISTORY_LOGS).catch(_ => {});
 };

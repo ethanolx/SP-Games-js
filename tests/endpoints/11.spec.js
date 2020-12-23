@@ -1,6 +1,6 @@
 import fetch from 'node-fetch';
 import colors from 'colors';
-import { TEST_PORT, HOST } from '../../src/config/servers.js';
+import { TEST_PORT, HOST } from '../../src/config/server.js';
 import { emptyCallback } from '../../src/utils/callbacks.js';
 import getCurrentDateTime from '../../src/utils/getCurrentDateTime.js';
 

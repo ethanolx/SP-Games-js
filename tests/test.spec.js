@@ -1,5 +1,5 @@
 import app from '../src/controllers/app.js';
-import { TEST_PORT } from '../src/config/servers.js';
+import { TEST_PORT } from '../src/config/server.js';
 
 import resetDatabase from "./reset-database.js";
 

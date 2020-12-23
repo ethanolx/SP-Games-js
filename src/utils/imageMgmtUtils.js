@@ -1,24 +1,25 @@
 import { promisify } from 'util';
-import { readdir } from 'fs';
+import { readdir, unlink } from 'fs';
+import { logError } from './logs.js';
 
 /**
  * @param {number} gid
+ * @returns {Promise<string[] | null>}
  */
 export const findImagesOfGame = async (gid) => {
-    let fileName = await promisify(readdir)('./assets/game-images').catch();
-    let files = fileName.filter(file => parseInt(file.split('_')[0]) === gid);
-    return files;
+    let fileName = await promisify(readdir)('./assets/game-images').catch(_ => []);
+    /** @type {string[]} */
+    let files = fileName.filter(file => parseInt(file.split('.')[0]) === gid);
+    return (files.length === 0) ? null : files;
 };
 
 /**
  * @param {number} gameid
  */
-export async function removeImages(gameid) {
-    if (await checkIfImageExists(gameid)) {
-        //@ts-ignore
-        const [_, ...OLD_IMAGES] = (await findImagesOfGame(gameid).catch()).map(file => './assets/game-images' + file).sort((a, b) => -1);
-        OLD_IMAGES.forEach(oldFile => { promisify(unlink)(oldFile).catch(); });
-    }
+export async function removePrevImage(gameid) {
+    //@ts-ignore
+    const OLD_IMAGE = (await findImagesOfGame(gameid).catch(_ => { })).map(file => './assets/game-images/' + file)[0];
+    promisify(unlink)(OLD_IMAGE).catch(logError);
 }
 
 /**

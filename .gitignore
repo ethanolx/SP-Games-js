@@ -4,15 +4,5 @@ node_modules
 # VSCode Configurations
 .vscode
 
-# Misc
-logs
-
-# Image Uploads
-assets
-
 # Marked For Deletion
 tmp
-
-# Assignment Brief & Table Structures
-*.docx
-*.doc

@@ -1,5 +1,5 @@
 import getConnection from '../config/database.js';
-import { logError, logHistory } from '../utils/log.js';
+import { logError, logHistory } from './logs.js';
 
 /**
  * @param {string} sql

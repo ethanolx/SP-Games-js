@@ -1,4 +1,4 @@
-import { logError } from "./log.js";
+import { logError } from "./logs.js";
 
 /**
  * @typedef {(queryErr: import("mysql2").QueryError | null, result: import("mysql2").RowDataPacket[] | import("mysql2").RowDataPacket[][] | import("mysql2").OkPacket | import("mysql2").OkPacket[] | import("mysql2").ResultSetHeader | null) => void} Callback
@@ -23,7 +23,7 @@ export const simpleCallbackErrorHandler = (err, result) => {
 };
 
 /**
- * @param {any} _
- * @param {any} __
+ * @param {any} [_]
+ * @param {any} [__]
  */
-export const emptyCallback = (_, __) => { };
+export const emptyCallback = (_ = undefined, __ = undefined) => { };

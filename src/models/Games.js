@@ -2,7 +2,7 @@ import query from '../utils/query.js';
 import Categories from './Categories.js';
 import { emptyCallback, simpleCallbackErrorHandler } from '../utils/callbacks.js';
 import { promisify } from 'util';
-import { logError } from '../utils/log.js';
+import { logError } from '../utils/logs.js';
 import Platforms from './Platforms.js';
 import G_P from './associative/G_P.js';
 import G_C from './associative/G_C.js';

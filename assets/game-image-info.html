@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Image Details</title>
+    <style>
+        * {
+            text-align: left;
+        }
+
+        body {
+            margin: 0 20vw;
+        }
+
+        img,
+        table {
+            width: 100%;
+        }
+
+    </style>
+</head>
+<body>
+    <h1>Image for game with id $gid$</h1>
+    <img src="http://localhost:3000/game/$gid$/image" />
+    <table>
+        <tr>
+            <th>File Size</th>
+            <td>$size$ bytes</td>
+        </tr>
+        <tr>
+            <th>Image Type</th>
+            <td>$type$</td>
+        </tr>
+    </table>
+</body>
+
+</html>

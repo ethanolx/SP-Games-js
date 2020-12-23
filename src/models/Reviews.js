@@ -1,6 +1,6 @@
 import query from '../utils/query.js';
 import { emptyCallback } from '../utils/callbacks.js';
-import { logError } from '../utils/log.js';
+import { logError } from '../utils/logs.js';
 
 /**
  * @typedef {Object} Review
