@@ -5,10 +5,10 @@ import { logError } from "./logs.js";
  */
 
 /**
- * @param {Error} opErr
+ * @param {Error} err
  */
-export const handleOperationError = (opErr) => {
-    throw opErr;
+export const throwErr = (err) => {
+    throw err;
 };
 
 /**
@@ -17,7 +17,6 @@ export const handleOperationError = (opErr) => {
  */
 export const simpleCallbackErrorHandler = (err, result) => {
     if (err) {
-        console.log(err);
         logError(err);
     }
 };

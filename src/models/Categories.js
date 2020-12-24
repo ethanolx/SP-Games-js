@@ -17,14 +17,6 @@ export default {
     },
 
     /**
-     * @param {string} catname
-     * @param {import('../utils/callbacks.js').Callback} callback
-     */
-    findId: (catname, callback) => {
-
-    },
-
-    /**
      * @param {Category} category
      * @param {import('../utils/callbacks.js').Callback} callback
      */

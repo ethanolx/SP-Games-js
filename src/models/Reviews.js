@@ -28,7 +28,6 @@ export default {
         const CREATE_NEW_REVIEW_SQL = 'INSERT INTO reviews (userid, gameid, content, rating) VALUES (?, ?, ?, ?);';
         query(CREATE_NEW_REVIEW_SQL, emptyCallback, [userid, gameid, review.content, review.rating], (err, result) => {
             if (err) {
-                console.log(err);
                 logError(err);
                 callback(err, null);
             }

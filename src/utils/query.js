@@ -29,8 +29,7 @@ export default (sql, fn, params = null, customFn = null) => {
                         logError(queryErr);
                         return fn(queryErr, null);
                     }
-                    // @ts-ignore
-                    else if (Object.keys(result).includes('length') && (result.length === 0)) {
+                    else if (result instanceof Array && (result.length === 0)) {
                         return fn(null, null);
                     }
                     else {
@@ -48,7 +47,6 @@ export default (sql, fn, params = null, customFn = null) => {
                     return customFn(queryErr, result);
                 });
             }
-
         }
     });
 };

@@ -6,7 +6,7 @@ const router = express.Router();
 
 // Route Handler (universal)
 router.all('*', (req, res) => {
-    res.redirect('/');
+    res.status(303).redirect('/');
 });
 
 export default router;

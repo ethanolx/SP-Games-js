@@ -27,11 +27,11 @@ async function test() {
     console.log(await e4());
     console.log(await e5());
     console.log(await e6());
-    console.log(await e7());
-    console.log(await e8());
-    console.log(await e9());
-    console.log(await e10());
-    console.log(await e11());
+    // console.log(await e7());
+    // console.log(await e8());
+    // console.log(await e9());
+    // console.log(await e10());
+    // console.log(await e11());
     SERVER.close(_ => console.log('\nEnd tests.'));
 }
 

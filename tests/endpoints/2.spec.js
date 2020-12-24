@@ -2,9 +2,9 @@ import fetch from 'node-fetch';
 import colors from 'colors';
 import { TEST_PORT, HOST } from '../../src/config/server.js';
 import { emptyCallback } from '../../src/utils/callbacks.js';
-import getCurrentDateTime from '../../src/utils/getCurrentDateTime.js';
 
 export default async () => {
+    const MESSAGE = '2.  POST    /users';
     return fetch(`http://${ HOST }:${ TEST_PORT }/users`, {
         method: 'POST',
         body: JSON.stringify({
@@ -16,8 +16,24 @@ export default async () => {
         headers: { 'Content-Type': 'application/json' }
     })
         .then(res => {
-            const MESSAGE = `2. POST /users | Status: ${ res.status }`;
-            return ((res.status >= 400) ? colors.red(MESSAGE + ` | ${getCurrentDateTime()}.log`) : colors.green(MESSAGE));
+            if (res.status === 201) {
+                return res.json();
+            }
+            else {
+                return false;
+            }
         })
+        .then(body => {
+            if (body === false) {
+                return body;
+            }
+            else {
+                const ATTRS = Object.keys(body);
+                return ATTRS.length === 1 && ATTRS.includes('userid') && (typeof body['userid']) === 'number';
+            }
+        })
+        .then(success =>
+            (success ? colors.green : colors.red)(MESSAGE)
+        )
         .catch(emptyCallback);
 };

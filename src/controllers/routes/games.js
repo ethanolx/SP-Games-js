@@ -26,13 +26,17 @@ router.route('/game')
     .post((req, res) => {
         /** @type {import('../../models/Games.js').Game} */
         const GAME = req.body;
+        if (!(['title', 'description', 'price', 'platformids', 'categoryids', 'year'].map(attr => Object.keys(GAME).includes(attr)).reduce((a, b) => a && b))) {
+            res.status(400).json({ message: 'Request body has missing attributes' });
+            return;
+        }
         Games.insert(GAME, (err, result) => {
             if (err) {
                 res.sendStatus(500);
             }
             else {
                 //@ts-ignore
-                res.status(201).json(result);
+                res.status(201).json({ gameid: result.insertId });
             }
         });
     });
@@ -45,6 +49,9 @@ router.route('/games/:platform')
         Games.findByPlatform(platform, version, (err, result) => {
             if (err) {
                 res.sendStatus(500);
+            }
+            else if (result === null) {
+                res.sendStatus(404);
             }
             else {
                 res.status(200).json(result);
@@ -59,7 +66,11 @@ router.route('/game/:id')
         const { id } = req.params;
         const gameid = parseInt(id);
         if (isNaN(gameid)) {
-            res.sendStatus(400);
+            res.status(400).json({ message: 'Invalid game id provided' });
+            return;
+        }
+        if (!(['title', 'description', 'price', 'platformids', 'categoryids', 'year'].map(attr => Object.keys(GAME).includes(attr)).reduce((a, b) => a && b))) {
+            res.status(400).json({ message: 'Request body has missing attributes' });
             return;
         }
         Games.update(GAME, gameid, (err, result) => {
@@ -67,8 +78,7 @@ router.route('/game/:id')
                 res.sendStatus(500);
             }
             else {
-                //@ts-ignore
-                res.status(201).json({ 'Affected Rows': result.affectedRows });
+                res.sendStatus(204);
             }
         });
     })
@@ -76,7 +86,7 @@ router.route('/game/:id')
         const { id } = req.params;
         const gameid = parseInt(id);
         if (isNaN(gameid)) {
-            res.sendStatus(400);
+            res.status(400).json({ message: 'Invalid game id provided' });
             return;
         }
         Games.delete(gameid, (err, result) => {
@@ -89,6 +99,9 @@ router.route('/game/:id')
         });
     });
 
+// Image Requirements
+const MAX_FILE_SIZE = 1000000;
+const MEDIA_TYPES_SUPPORTED = ['.jpg', '.png', '.jpeg', '.gif'];
 
 // Multipart Handling Middleware
 const IMAGE_STORAGE = multer({
@@ -99,9 +112,9 @@ const IMAGE_STORAGE = multer({
         filename: (req, file, fn) => {
             fn(null, `${ req.params.gid }${ extname(file.originalname) }`);
         }
-    }), limits: { fileSize: 1000000 },
+    }), limits: { fileSize: MAX_FILE_SIZE },
     fileFilter: (req, file, fn) => {
-        fn(null, ['.jpg', '.png', '.jpeg', '.gif'].includes(extname(file.originalname)));
+        fn(null, MEDIA_TYPES_SUPPORTED.includes(extname(file.originalname)));
     }
 });
 
@@ -109,13 +122,23 @@ const IMAGE_STORAGE = multer({
 router.route('/game/:gid/image')
     .get((req, res) => {
         (async () => {
-            const FILES = (await findImagesOfGame(parseInt(req.params.gid)).catch(_ => { }));
-            if (FILES) {
+            const GAME_ID = parseInt(req.params.gid);
+            const FILES = await findImagesOfGame(GAME_ID).catch(logError);
+            if (isNaN(GAME_ID)) {
+                res.status(400).json({ message: 'Invalid game id' });
+                return;
+            }
+            const GAMES = await promisify(Games.findOne)(GAME_ID).catch(logError);
+            if (GAMES instanceof Array && GAMES.length === 0) {
+                res.status(422).json({ message: 'Game does not exist' });
+            }
+            else if (FILES) {
                 res.status(200).sendFile(FILES[0], { root: './assets/game-images' }, (err) => { if (err) logError(err); });
             }
             else {
                 res.sendStatus(404);
             }
+            return;
         })();
     })
     .post((req, res, next) => {
@@ -126,16 +149,37 @@ router.route('/game/:gid/image')
                 res.status(400).json({ message: 'Invalid game id' });
                 return;
             }
-            const FILES = (await findImagesOfGame(parseInt(req.params.gid)).catch(_ => { }));
-            if (FILES) {
-                removePrevImage(GAME_ID);
+            else {
+                Games.findOne(GAME_ID, (err, result) => {
+                    if (err) {
+                        res.sendStatus(500);
+                    }
+                    else if (result instanceof Array && result.length === 0) {
+                        res.status(422).json({ message: 'Game does not exist' });
+                    }
+                    else {
+                        (async () => {
+                            const FILES = await findImagesOfGame(parseInt(req.params.gid)).catch(logError);
+                            if (FILES) {
+                                await removePrevImage(GAME_ID).catch(logError);
+                            }
+                            next();
+                            return;
+                        })();
+                    }
+                });
             }
-            next();
+            return;
         })();
     })
     .post(IMAGE_STORAGE.single('gameImage'))
     .post((req, res) => {
-        res.sendStatus(204);
+        if (!req.file) {
+            res.status(415).json({ media_types_supported: MEDIA_TYPES_SUPPORTED, max_file_size_bytes: MAX_FILE_SIZE });
+        }
+        else {
+            res.sendStatus(204);
+        }
     });
 
 router.route('/game/:gid/image/info')
@@ -154,19 +198,18 @@ router.route('/game/:gid/image/info')
                             res.status(200).type('html').send(TEMPLATE);
                             return;
                         }).catch(logError);
+                        return;
+                    case 422:
+                        res.status(422).json({ message: `Game with id ${ GAMEID } does not exist` });
+                        return;
                     case 404:
-                        res.status(404).type('html').send(
-                            `<h1 color="red">Image for game with id ${ GAMEID } does not exist</h1>`
-                        );
+                        res.status(404).json({ message: `Image for game with id ${ GAMEID } does not exist` });
                         return;
                     case 400:
-                        res.status(400).type('html').send(
-                            `<h1 color="red">${ GAMEID } is not a valid game id</h1>`
-                        );
+                        res.status(400).json({ message: `${ GAMEID } is not a valid game id` });
+                        return;
                     default:
-                        res.status(204).type('html').send(
-                            `<h1>Nothing to send</h1>`
-                        );
+                        res.sendStatus(204);
                 }
             })
             .catch(logError);

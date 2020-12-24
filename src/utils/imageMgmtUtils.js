@@ -7,8 +7,9 @@ import { logError } from './logs.js';
  * @returns {Promise<string[] | null>}
  */
 export const findImagesOfGame = async (gid) => {
-    let fileName = await promisify(readdir)('./assets/game-images').catch(_ => []);
+    let fileName = await promisify(readdir)('./assets/game-images').catch(_ => {});
     /** @type {string[]} */
+    //@ts-ignore
     let files = fileName.filter(file => parseInt(file.split('.')[0]) === gid);
     return (files.length === 0) ? null : files;
 };
