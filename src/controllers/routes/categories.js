@@ -2,6 +2,9 @@
 import express from 'express';
 import { json, urlencoded } from 'body-parser';
 
+// Utilities
+import { invalidBody, invalidId } from '../../utils/common-errors.js';
+
 // Model
 import Categories from '../../models/Categories.js';
 
@@ -17,13 +20,16 @@ router.route('/category')
     .post((req, res) => {
         /**@type {import('../../models/Categories.js').Category} */
         const CATEGORY = req.body;
-        if (!(['catname', 'description'].map(attr => Object.keys(CATEGORY).includes(attr)).reduce((a, b) => a && b))) {
-            res.status(400).json({ message: 'Request body has missing attributes' });
+        if (invalidBody(CATEGORY, {
+            catname: 'string',
+            description: 'string'
+        }, res)) {
             return;
         }
-        Categories.insert(CATEGORY, (err, result) => {
+        Categories.insert(CATEGORY, (err, _) => {
             if (err) {
                 switch (err.code) {
+                    case 'ER_DUP_KEY':
                     case 'ER_DUP_ENTRY':
                         res.status(422).json({ message: `The category ${ CATEGORY.catname } already exists` });
                         break;
@@ -43,17 +49,22 @@ router.route('/category/:id')
         const CATEGORY = req.body;
         const { id } = req.params;
         const categoryid = parseInt(id);
-        if (isNaN(categoryid)) {
-            res.status(400).json({ message: 'Invalid id provided' });
+        if (invalidId(id, res) || invalidBody(CATEGORY, {
+            catname: 'string',
+            description: 'string'
+        }, res)) {
             return;
         }
-        if (!(['catname', 'description'].map(attr => Object.keys(CATEGORY).includes(attr)).reduce((a, b) => a && b))) {
-            res.status(400).json({ message: 'Request body has missing attributes' });
-            return;
-        }
-        Categories.update(CATEGORY, categoryid, (err, result) => {
+        Categories.update(CATEGORY, categoryid, (err, _) => {
             if (err) {
-                res.sendStatus(err.code === 'ER_DUP_ENTRY' ? 422 : 500);
+                switch (err.code) {
+                    case 'ER_DUP_KEY':
+                    case 'ER_DUP_ENTRY':
+                        res.status(422).json({ message: `The category ${ CATEGORY.catname } already exists` });
+                        break;
+                    default:
+                        res.sendStatus(500);
+                }
             }
             else {
                 res.sendStatus(204);

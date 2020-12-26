@@ -5,14 +5,17 @@ import multer from 'multer';
 import { extname } from 'path';
 import { promisify } from 'util';
 import { readFile } from 'fs';
+
+// Utilities
 import { findImagesOfGame, removePrevImage } from '../../utils/imageMgmtUtils.js';
 import { logError } from '../../utils/logs.js';
+import { invalidBody, invalidId } from '../../utils/common-errors.js';
 
 // Model
 import Games from '../../models/Games.js';
 
 // Configurations
-import { HOST, PORT } from '../../config/server.js';
+import { HOST, PORT, MAX_FILE_SIZE, MEDIA_TYPES_SUPPORTED } from '../../config/server.js';
 
 /**@type {express.Router} */
 const router = express.Router();
@@ -26,8 +29,14 @@ router.route('/game')
     .post((req, res) => {
         /** @type {import('../../models/Games.js').Game} */
         const GAME = req.body;
-        if (!(['title', 'description', 'price', 'platformids', 'categoryids', 'year'].map(attr => Object.keys(GAME).includes(attr)).reduce((a, b) => a && b))) {
-            res.status(400).json({ message: 'Request body has missing attributes' });
+        if (invalidBody(GAME, {
+            title: 'string',
+            description: 'string',
+            price: 'number',
+            year: 'number?',
+            platformids: 'object',
+            categoryids: 'object'
+        }, res)) {
             return;
         }
         Games.insert(GAME, (err, result) => {
@@ -46,34 +55,41 @@ router.route('/games/:platform')
         const { platform } = req.params;
         const { version } = req.query;
         //@ts-ignore
-        Games.findByPlatform(platform, version, (err, result) => {
+        Games.findByPlatform(platform, version, (err, results) => {
             if (err) {
                 res.sendStatus(500);
             }
-            else if (result === null) {
+            else if (results === null) {
                 res.sendStatus(404);
             }
             else {
-                res.status(200).json(result);
+                res.status(200).json(results);
             }
         });
     });
 
 router.route('/game/:id')
+    .all((req, res, next) => {
+        if (invalidId(req.params.id, res)) {
+            return;
+        }
+        next();
+    })
     .put((req, res) => {
         /**@type {import('../../models/Games.js').Game} */
         const GAME = req.body;
-        const { id } = req.params;
-        const gameid = parseInt(id);
-        if (isNaN(gameid)) {
-            res.status(400).json({ message: 'Invalid game id provided' });
+        const GAME_ID = parseInt(req.params.id);
+        if (invalidBody(GAME, {
+            title: 'string',
+            description: 'string',
+            price: 'number',
+            year: 'number?',
+            platformids: 'object',
+            categoryids: 'object'
+        }, res)) {
             return;
         }
-        if (!(['title', 'description', 'price', 'platformids', 'categoryids', 'year'].map(attr => Object.keys(GAME).includes(attr)).reduce((a, b) => a && b))) {
-            res.status(400).json({ message: 'Request body has missing attributes' });
-            return;
-        }
-        Games.update(GAME, gameid, (err, result) => {
+        Games.update(GAME, GAME_ID, (err, result) => {
             if (err) {
                 res.sendStatus(500);
             }
@@ -83,13 +99,8 @@ router.route('/game/:id')
         });
     })
     .delete((req, res) => {
-        const { id } = req.params;
-        const gameid = parseInt(id);
-        if (isNaN(gameid)) {
-            res.status(400).json({ message: 'Invalid game id provided' });
-            return;
-        }
-        Games.delete(gameid, (err, result) => {
+        const GAME_ID = parseInt(req.params.id);
+        Games.delete(GAME_ID, (err, result) => {
             if (err) {
                 res.sendStatus(500);
             }
@@ -98,10 +109,6 @@ router.route('/game/:id')
             }
         });
     });
-
-// Image Requirements
-const MAX_FILE_SIZE = 1000000;
-const MEDIA_TYPES_SUPPORTED = ['.jpg', '.png', '.jpeg', '.gif'];
 
 // Multipart Handling Middleware
 const IMAGE_STORAGE = multer({
@@ -120,14 +127,16 @@ const IMAGE_STORAGE = multer({
 
 // Image Uploads
 router.route('/game/:gid/image')
+    .all((req, res, next) => {
+        if (invalidId(req.params.gid, res)) {
+            return;
+        }
+        next();
+    })
     .get((req, res) => {
         (async () => {
             const GAME_ID = parseInt(req.params.gid);
             const FILES = await findImagesOfGame(GAME_ID).catch(logError);
-            if (isNaN(GAME_ID)) {
-                res.status(400).json({ message: 'Invalid game id' });
-                return;
-            }
             const GAMES = await promisify(Games.findOne)(GAME_ID).catch(logError);
             if (GAMES instanceof Array && GAMES.length === 0) {
                 res.status(422).json({ message: 'Game does not exist' });
@@ -143,33 +152,25 @@ router.route('/game/:gid/image')
     })
     .post((req, res, next) => {
         (async () => {
-            const { gid } = req.params;
-            const GAME_ID = parseInt(gid);
-            if (isNaN(GAME_ID)) {
-                res.status(400).json({ message: 'Invalid game id' });
-                return;
-            }
-            else {
-                Games.findOne(GAME_ID, (err, result) => {
-                    if (err) {
-                        res.sendStatus(500);
-                    }
-                    else if (result instanceof Array && result.length === 0) {
-                        res.status(422).json({ message: 'Game does not exist' });
-                    }
-                    else {
-                        (async () => {
-                            const FILES = await findImagesOfGame(parseInt(req.params.gid)).catch(logError);
-                            if (FILES) {
-                                await removePrevImage(GAME_ID).catch(logError);
-                            }
-                            next();
-                            return;
-                        })();
-                    }
-                });
-            }
-            return;
+            const GAME_ID = parseInt(req.params.gid);
+            Games.findOne(GAME_ID, (err, result) => {
+                if (err) {
+                    res.sendStatus(500);
+                }
+                else if (result instanceof Array && result.length === 0) {
+                    res.status(422).json({ message: 'Game does not exist' });
+                }
+                else {
+                    (async () => {
+                        const FILES = await findImagesOfGame(parseInt(req.params.gid)).catch(logError);
+                        if (FILES) {
+                            await removePrevImage(GAME_ID).catch(logError);
+                        }
+                        next();
+                        return;
+                    })();
+                }
+            });
         })();
     })
     .post(IMAGE_STORAGE.single('gameImage'))
@@ -185,6 +186,9 @@ router.route('/game/:gid/image')
 router.route('/game/:gid/image/info')
     .get((req, res) => {
         const GAMEID = req.params.gid;
+        if (invalidId(req.params.gid, res)) {
+            return;
+        }
         fetch(`http://${ HOST }:${ PORT }/game/${ GAMEID }/image`, { method: 'GET' })
             .then(resp => {
                 switch (resp.status) {
@@ -192,6 +196,8 @@ router.route('/game/:gid/image/info')
                         resp.blob().then(async IMAGE_FILE => {
                             const TEMPLATE_OR_VOID = (await promisify(readFile)('./assets/game-image-info.html').catch(logError));
                             const TEMPLATE = (TEMPLATE_OR_VOID ? TEMPLATE_OR_VOID.toString()
+                                .replace(/\$host\$/, HOST)
+                                .replace(/\$port\$/, PORT.toString())
                                 .replace(/\$gid\$/g, GAMEID)
                                 .replace(/\$size\$/, IMAGE_FILE.size.toString())
                                 .replace(/\$type\$/, IMAGE_FILE.type) : '');

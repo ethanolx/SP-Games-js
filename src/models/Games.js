@@ -1,6 +1,6 @@
 import query from '../utils/query.js';
 import Categories from './Categories.js';
-import { emptyCallback, throwErr } from '../utils/callbacks.js';
+import { emptyCallback } from '../utils/callbacks.js';
 import { promisify } from 'util';
 import { logError } from '../utils/logs.js';
 import Platforms from './Platforms.js';
@@ -24,7 +24,7 @@ const Games = {
      * @param {import('../utils/callbacks.js').Callback} callback
      */
     findByPlatform: (platform, version, callback) => {
-        Platforms.findId({ generic_type: platform, version: version }, (err, wrapper) => {
+        Platforms.findId({ platform: platform, version: version }, (err, wrapper) => {
             Games.findByPlatformId(wrapper[0]['id'], callback);
         });
     },
@@ -44,9 +44,23 @@ const Games = {
             else {
                 //@ts-ignore
                 const GAME_ID = result.insertId;
-                Games.insertGameCategories(GAME_ID, game.categoryids);
-                Games.insertGamePlatforms(GAME_ID, game.platformids);
-                return callback(null, result);
+                Games.insertGamePlatforms(GAME_ID, game.platformids, (er, _) => {
+                    if (er) {
+                        Games.delete(GAME_ID, emptyCallback);
+                        return callback(er, null);
+                    }
+                    else {
+                        Games.insertGameCategories(GAME_ID, game.categoryids, (e, __) => {
+                            if (e) {
+                                Games.delete(GAME_ID, emptyCallback);
+                                return callback(e, null);
+                            }
+                            else {
+                                return callback(null, result);
+                            }
+                        });
+                    }
+                });
             }
         });
     },
@@ -62,13 +76,25 @@ const Games = {
         query(UPDATE_EXISTING_GAME_SQL, emptyCallback, [REST, gameid], (err, result) => {
             if (err) {
                 logError(err);
-                callback(err, null);
+                return callback(err, null);
             }
             else {
-                callback(null, result);
+                Games.updateGamePlatforms(gameid, platformids, (er, _) => {
+                    if (er) {
+                        return callback(er, null);
+                    }
+                    else {
+                        Games.updateGameCategories(gameid, categoryids, (e, __) => {
+                            if (e) {
+                                return callback(e, null);
+                            }
+                            else {
+                                return callback(null, result);
+                            }
+                        });
+                    }
+                });
             }
-            Games.updateGameCategories(gameid, categoryids);
-            Games.updateGamePlatforms(gameid, platformids);
         });
     },
 
@@ -105,7 +131,22 @@ const Games = {
      */
     findByGameIds: (gameids, callback) => {
         const GET_ALL_GAMES_SQL = 'SELECT id AS gameid, title, description, price, year, created_at FROM games WHERE games.id IN (?);';
-        query(GET_ALL_GAMES_SQL, callback, [gameids]);
+        query(GET_ALL_GAMES_SQL, emptyCallback, [gameids], (err, result) => {
+            if (err) {
+                logError(err);
+                return callback(err, null);
+            }
+            else {
+                //@ts-ignore
+                return callback(null, result.map(game => {
+                    const { price, ...rest } = game;
+                    return {
+                        price: parseFloat(price),
+                        ...rest
+                    };
+                }));
+            }
+        });
     },
 
     /**
@@ -131,7 +172,8 @@ const Games = {
                             // @ts-ignore
                             for (let game of GAMES) {
                                 const CATEGORIES = await promisify(Categories.findByGame)(game.gameid).catch(logError);
-                                g.push({ ...game, categories: CATEGORIES });
+                                const PLATFORMS = await promisify(Platforms.findByGame)(game.gameid).catch(logError);
+                                g.push({ ...game, categories: CATEGORIES, platforms: PLATFORMS });
                             }
                             return g;
                         })().then(g => callback(null, g)).catch(logError);
@@ -153,15 +195,18 @@ const Games = {
     /**
      * @param {number} gameid
      * @param {number[]} catids
+     * @param {import('../utils/callbacks.js').Callback} callback
      */
-    insertGameCategories: (gameid, catids) => {
-        const INSERT_GAME_CATEGORY_SQL = 'INSERT INTO game_category_asc (gameid, catid) VALUES ?;';
+    insertGameCategories: (gameid, catids, callback) => {
+        const INSERT_GAME_CATEGORY_SQL = 'INSERT INTO game_category_asc (gameid, categoryid) VALUES ?;';
         query(INSERT_GAME_CATEGORY_SQL, emptyCallback, [catids.map(cid => [gameid, cid])], (err, result) => {
             if (err) {
                 logError(err);
+                return callback(err, null);
             }
             else {
                 G_C.removeDuplicateRows();
+                return callback(null, result);
             }
         });
     },
@@ -169,15 +214,18 @@ const Games = {
     /**
      * @param {number} gameid
      * @param {number[]} platformids
+     * @param {import('../utils/callbacks.js').Callback} callback
      */
-    insertGamePlatforms: (gameid, platformids) => {
+    insertGamePlatforms: (gameid, platformids, callback) => {
         const INSERT_GAME_PLATFORM_SQL = 'INSERT INTO game_platform_asc (gameid, platformid) VALUES ?;';
         query(INSERT_GAME_PLATFORM_SQL, emptyCallback, [platformids.map(pid => [gameid, pid])], (err, result) => {
             if (err) {
                 logError(err);
+                return callback(err, null);
             }
             else {
                 G_P.removeDuplicateRows();
+                return callback(null, result);
             }
         });
     },
@@ -185,19 +233,47 @@ const Games = {
     /**
      * @param {number} gameid
      * @param {number[]} catids
+     * @param {import('../utils/callbacks.js').Callback} callback
      */
-    updateGameCategories: (gameid, catids) => {
-        promisify(Games.deleteGameCategories)(gameid).catch(logError);
-        promisify(Games.insertGameCategories)(gameid, catids).catch(logError);
+    updateGameCategories: (gameid, catids, callback) => {
+        Games.deleteGameCategories(gameid, (err, _) => {
+            if (err) {
+                return callback(err, null);
+            }
+            else {
+                Games.insertGameCategories(gameid, catids, (er, __) => {
+                    if (er) {
+                        return callback(er, null);
+                    }
+                    else {
+                        return callback(null, null);
+                    }
+                });
+            }
+        });
     },
 
     /**
      * @param {number} gameid
      * @param {number[]} platformids
+     * @param {import('../utils/callbacks.js').Callback} callback
      */
-    updateGamePlatforms: (gameid, platformids) => {
-        promisify(Games.deleteGamePlatforms)(gameid).catch(logError);
-        promisify(Games.insertGamePlatforms)(gameid, platformids).catch(logError);
+    updateGamePlatforms: (gameid, platformids, callback) => {
+        Games.deleteGamePlatforms(gameid, (err, _) => {
+            if (err) {
+                return callback(err, null);
+            }
+            else {
+                Games.insertGamePlatforms(gameid, platformids, (er, __) => {
+                    if (er) {
+                        return callback(err, null);
+                    }
+                    else {
+                        return callback(null, null);
+                    }
+                });
+            }
+        });
     }
 };
 

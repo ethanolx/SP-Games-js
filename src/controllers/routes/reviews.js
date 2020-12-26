@@ -2,6 +2,9 @@
 import express from 'express';
 import { json, urlencoded } from 'body-parser';
 
+// Utilities
+import { invalidBody, invalidId } from '../../utils/common-errors.js';
+
 // Model
 import Reviews from '../../models/Reviews.js';
 
@@ -15,13 +18,11 @@ router.use(urlencoded({ extended: false }));
 // Route Handlers
 router.route('/game/:id/review')
     .get((req, res) => {
-        const { id } = req.params;
-        const gameid = parseInt(id);
-        if (isNaN(gameid)) {
-            res.status(400).json({ message: 'Invalid id provided' });
+        const GAME_ID = parseInt(req.params.id);
+        if (invalidId(req.params.id, res)) {
             return;
         }
-        Reviews.findByGame(gameid, (err, result) => {
+        Reviews.findByGame(GAME_ID, (err, result) => {
             if (err) {
                 res.sendStatus(500);
             }
@@ -36,21 +37,21 @@ router.route('/user/:uid/game/:gid/review')
         /**@type {import('../../models/Reviews.js').Review} */
         const REVIEW = req.body;
         const { uid, gid } = req.params;
-        const userid = parseInt(uid);
-        const gameid = parseInt(gid);
-        if (isNaN(userid) || isNaN(gameid)) {
-            res.status(400).json({ message: 'Invalid id provided' });
+        const USER_ID = parseInt(uid);
+        const GAME_ID = parseInt(gid);
+        if (invalidId(uid, res) || invalidId(gid, res) || invalidBody(REVIEW, {
+            content: 'string',
+            rating: 'number'
+        }, res)) {
             return;
         }
-        if (['content', 'rating'].map(attr => Object.keys(REVIEW).includes(attr)).reduce((a, b) => a && b)) {
-            res.status(422).json({ message: 'Request body has missing attributes' });
-        }
-        Reviews.insert(userid, gameid, REVIEW, (err, result) => {
+        Reviews.insert(USER_ID, GAME_ID, REVIEW, (err, result) => {
             if (err) {
                 res.sendStatus(500);
             }
             else {
-                res.status(201).json({ reviewid: result });
+                //@ts-ignore
+                res.status(201).json({ reviewid: result.insertId });
             }
         });
     });

@@ -7,19 +7,13 @@ import { logError } from "./logs.js";
 /**
  * @param {Error} err
  */
-export const throwErr = (err) => {
-    throw err;
-};
+export const throwErr = (err) => { throw err; };
 
 /**
  * @param {Error} err
  * @param {any} result
  */
-export const simpleCallbackErrorHandler = (err, result) => {
-    if (err) {
-        logError(err);
-    }
-};
+export const simpleCallbackErrorHandler = (err, result) => { if (err) { logError(err); } };
 
 /**
  * @param {any} [_]

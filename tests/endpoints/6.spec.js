@@ -3,6 +3,7 @@ import colors from 'colors';
 import { TEST_PORT, HOST } from '../../src/config/server.js';
 import { emptyCallback } from '../../src/utils/callbacks.js';
 import getCurrentDateTime from '../../src/utils/getCurrentDateTime.js';
+import compareObjectToSignature from '../../src/utils/checkSignature.js';
 
 export default async () => {
     const MESSAGE = '6.  POST    /game';
@@ -13,7 +14,7 @@ export default async () => {
             description: "Assassin's Creed Valhalla is an action role-playing video game developed by Ubisoft Montreal and published by Ubisoft",
             price: 69.90,
             platformids: [1, 2],
-            categoryids: [3],
+            categoryids: [2, 5],
             year: 2020
         }),
         headers: { 'Content-Type': 'application/json' }
@@ -26,15 +27,21 @@ export default async () => {
                 return false;
             }
         })
-        .then(body => {
-            if (body === false) {
-                return body;
-            }
-            else {
-                const ATTRS = Object.keys(body);
-                return ATTRS.length === 1 && ATTRS.includes('gameid') && (typeof body['gameid']) === 'number';
-            }
-        })
+        .then(
+            /**
+             * @param {{}[] | false} body
+             * @returns {boolean}
+             */
+            body => {
+                if (body === false) {
+                    return body;
+                }
+                else {
+                    return compareObjectToSignature(body, {
+                        gameid: 'number'
+                    });
+                }
+            })
         .then(success =>
             (success ? colors.green : colors.red)(MESSAGE)
         )

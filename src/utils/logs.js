@@ -55,7 +55,6 @@ async function getFilesInDir(dir, ext = null) {
 }
 
 /**
- * don't overuse
  * @param {Error} err
  */
 export const logError = (err) => {

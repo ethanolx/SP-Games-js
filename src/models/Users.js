@@ -32,8 +32,8 @@ export default {
      * @param {import('../utils/callbacks.js').Callback} callback
      */
     insert: (user, callback) => {
-        const CREATE_NEW_USER_SQL = 'INSERT INTO users (username, email, type, profile_pic_url) VALUES (?, ?, ?, ?);';
+        const CREATE_NEW_USER_SQL = 'INSERT INTO users (username, email, type, profile_pic_url) VALUES (?);';
         const { username, email, type, profile_pic_url } = user;
-        query(CREATE_NEW_USER_SQL, callback, [username, email, type, profile_pic_url]);
+        query(CREATE_NEW_USER_SQL, callback, [[username, email, type, profile_pic_url]]);
     }
 };

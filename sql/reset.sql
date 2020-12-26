@@ -1,19 +1,8 @@
-SET
-    foreign_key_checks = 0;
+DROP DATABASE IF EXISTS spgames;
 
-DROP TABLE IF EXISTS users;
+CREATE DATABASE spgames;
 
-DROP TABLE IF EXISTS categories;
-
-DROP TABLE IF EXISTS platforms;
-
-DROP TABLE IF EXISTS games;
-
-DROP TABLE IF EXISTS reviews;
-
-DROP TABLE IF EXISTS game_category_asc;
-
-DROP TABLE IF EXISTS game_platform_asc;
+USE spgames;
 
 CREATE TABLE users (
     userid INT AUTO_INCREMENT UNIQUE NOT NULL,
@@ -28,7 +17,15 @@ CREATE TABLE users (
 CREATE TABLE categories (
     id INT AUTO_INCREMENT UNIQUE NOT NULL,
     catname VARCHAR(20) UNIQUE NOT NULL,
-    `description` TEXT NULL,
+    `description` TEXT NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    PRIMARY KEY (id)
+);
+
+CREATE TABLE platforms (
+    id INT AUTO_INCREMENT UNIQUE NOT NULL,
+    platform VARCHAR(15) NOT NULL,
+    `version` VARCHAR(20) DEFAULT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     PRIMARY KEY (id)
 );
@@ -36,37 +33,11 @@ CREATE TABLE categories (
 CREATE TABLE games (
     id INT AUTO_INCREMENT UNIQUE NOT NULL,
     title VARCHAR(25) UNIQUE NOT NULL,
-    `description` TEXT NULL,
+    `description` TEXT NOT NULL,
     price DECIMAL(5, 2) NOT NULL,
     year INT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     PRIMARY KEY (id)
-);
-
-CREATE TABLE platforms (
-    id INT AUTO_INCREMENT UNIQUE NOT NULL,
-    generic_type VARCHAR(15) NOT NULL,
-    `version` VARCHAR(20) DEFAULT NULL,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    PRIMARY KEY (id)
-);
-
-CREATE TABLE game_platform_asc (
-    id INT AUTO_INCREMENT UNIQUE NOT NULL,
-    gameid INT NOT NULL,
-    platformid INT NOT NULL,
-    PRIMARY KEY (id),
-    FOREIGN KEY (gameid) REFERENCES games(id) ON DELETE CASCADE,
-    FOREIGN KEY (platformid) REFERENCES platforms(id) ON DELETE CASCADE
-);
-
-CREATE TABLE game_category_asc (
-    id INT AUTO_INCREMENT UNIQUE NOT NULL,
-    gameid INT NOT NULL,
-    catid INT NOT NULL,
-    PRIMARY KEY (id),
-    FOREIGN KEY (gameid) REFERENCES games(id) ON DELETE CASCADE,
-    FOREIGN KEY (catid) REFERENCES categories(id) ON DELETE CASCADE
 );
 
 CREATE TABLE reviews (
@@ -81,21 +52,41 @@ CREATE TABLE reviews (
     FOREIGN KEY (gameid) REFERENCES games(id) ON DELETE CASCADE
 );
 
+CREATE TABLE game_platform_asc (
+    id INT AUTO_INCREMENT UNIQUE NOT NULL,
+    gameid INT NOT NULL,
+    platformid INT NOT NULL,
+    PRIMARY KEY (id),
+    FOREIGN KEY (gameid) REFERENCES games(id) ON DELETE CASCADE,
+    FOREIGN KEY (platformid) REFERENCES platforms(id) ON DELETE CASCADE
+);
+
+CREATE TABLE game_category_asc (
+    id INT AUTO_INCREMENT UNIQUE NOT NULL,
+    gameid INT NOT NULL,
+    categoryid INT NOT NULL,
+    PRIMARY KEY (id),
+    FOREIGN KEY (gameid) REFERENCES games(id) ON DELETE CASCADE,
+    FOREIGN KEY (categoryid) REFERENCES categories(id) ON DELETE CASCADE
+);
+
 DELETE FROM
     users;
 
 INSERT INTO
-    users (username, email, TYPE)
+    users (username, email, `type`)
 VALUES
-    ('ethan', 'ethan@gmail.com', 'Admin'),
-    ('jsx', 'johnsmith@x.net', 'Customer'),
-    ('xox', 'bobby@abc.mail', 'Customer');
+    ('ethanolx', 'ethan@gmail.com', 'Admin'),
+    ('Mary101', 'm101@yahoo.com.sg', 'Customer'),
+    ('JSmith', 'johnsmith@x.net', 'Customer'),
+    ('Jane Smithsonian', 'jsx@abc.mail', 'Customer'),
+    ('F00D4L1F3', 'joel@git.git', 'Admin');
 
 DELETE FROM
     categories;
 
 INSERT INTO
-    categories (catname, description)
+    categories (catname, `description`)
 VALUES
     (
         'Puzzle',
@@ -104,13 +95,44 @@ VALUES
     (
         'First Person Shooter',
         'You play from the perspective of the protagonist, fulfilling objectives to win'
+    ),
+    (
+        'E-Sports',
+        'Get a workout without having to leave your house!'
+    ),
+    (
+        'Text Adventures',
+        'Origin of all games to date. The original, if you will.'
     );
+
+DELETE FROM
+    platforms;
+
+INSERT INTO
+    platforms (platform, `version`)
+VALUES
+    ('PC', 'macOS'),
+    ('PC', 'Windows'),
+    ('Mobile', 'Android'),
+    ('Mobile', 'iOS'),
+    ('Xbox', '360'),
+    ('Xbox', 'One'),
+    ('Playstation', '1'),
+    ('Playstation', '2'),
+    ('Playstation', '3'),
+    ('Playstation', '4'),
+    ('Playstation', '5'),
+    ('Playstation', 'Portable'),
+    ('Nintendo', '3DS'),
+    ('Nintendo', 'Game Boy'),
+    ('Nintendo', 'Switch'),
+    ('Nintendo', 'Wii');
 
 DELETE FROM
     games;
 
 INSERT INTO
-    games (title, description, price, year)
+    games (title, `description`, price, `year`)
 VALUES
     (
         'Call of Duty',
@@ -124,34 +146,6 @@ VALUES
         5.60,
         2019
     );
-
-DELETE FROM
-    platforms;
-
-INSERT INTO
-    platforms (generic_type, version)
-VALUES
-    ('PC', NULL),
-    ('Xbox', 'One');
-
-DELETE FROM
-    game_platform_asc;
-
-INSERT INTO
-    game_platform_asc (gameid, platformid)
-VALUES
-    (1, 1),
-    (1, 2),
-    (2, 1);
-
-DELETE FROM
-    game_category_asc;
-
-INSERT INTO
-    game_category_asc (gameid, catid)
-VALUES
-    (1, 2),
-    (2, 1);
 
 DELETE FROM
     reviews;
@@ -172,14 +166,33 @@ VALUES
         7.0
     ),
     (
-        2,
+        3,
         1,
         "Call of Duty (COD) is a shooter that you shouldn't miss. The excellent campaign and fun online modes guarantee hundreds of hours of entertainment and fun.",
         8.0
     ),
     (
-        3,
+        4,
         2,
         "I don't really like Puzzle games, because I'm to dumb for them. But this Game is so awesome and cute and it's one of the best Games I've ever played.",
         7.6
     );
+
+DELETE FROM
+    game_platform_asc;
+
+INSERT INTO
+    game_platform_asc (gameid, platformid)
+VALUES
+    (1, 1),
+    (1, 2),
+    (2, 1);
+
+DELETE FROM
+    game_category_asc;
+
+INSERT INTO
+    game_category_asc (gameid, categoryid)
+VALUES
+    (1, 2),
+    (2, 1);

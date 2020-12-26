@@ -2,6 +2,9 @@
 import express from 'express';
 import { json, urlencoded } from 'body-parser';
 
+// Utilities
+import { invalidBody, invalidId } from '../../utils/common-errors.js';
+
 // Model
 import Users from '../../models/Users.js';
 
@@ -15,23 +18,27 @@ router.use(urlencoded({ extended: false }));
 // Route Handlers
 router.route('/users')
     .get((req, res) => {
-        Users.findAll((err, result) => {
+        Users.findAll((err, results) => {
             if (err) {
                 res.sendStatus(500);
             }
-            else if (result === null) {
+            else if (results === null) {
                 res.status(200).json([]);
             }
             else {
-                res.status(200).json(result);
+                res.status(200).json(results);
             }
         });
     })
     .post((req, res) => {
         /**@type {import('../../models/Users.js').User} */
         const USER = req.body;
-        if (!(['username', 'email', 'type'].map(attr => Object.keys(USER).includes(attr)).reduce((a, b) => a && b))) {
-            res.status(422).json({ message: 'Request body has missing attributes' });
+        if (invalidBody(USER, {
+            username: 'string',
+            email: 'string',
+            type: 'string',
+            profile_pic_url: 'string?'
+        }, res)) {
             return;
         }
         Users.insert(USER, (err, result) => {
@@ -47,12 +54,11 @@ router.route('/users')
 
 router.route('/users/:id')
     .get((req, res) => {
-        const USERID = parseInt(req.params.id);
-        if (isNaN(USERID)) {
-            res.status(400).json({ message: 'Invalid id provided' });
+        const USER_ID = parseInt(req.params.id);
+        if (invalidId(req.params.id, res)) {
             return;
         }
-        Users.findOne(USERID, (err, result) => {
+        Users.findOne(USER_ID, (err, result) => {
             if (err) {
                 res.sendStatus(500);
             }

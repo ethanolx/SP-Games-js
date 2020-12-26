@@ -12,7 +12,7 @@ export default {
      * @param {import('../utils/callbacks.js').Callback} callback
      */
     findByGame: (gameid, callback) => {
-        const GET_ALL_CATEGORIES_BY_GAME = 'SELECT categories.id AS catid, catname FROM game_category_asc INNER JOIN categories ON game_category_asc.catid = categories.id WHERE game_category_asc.gameid = ?;';
+        const GET_ALL_CATEGORIES_BY_GAME = 'SELECT categories.id AS catid, catname FROM game_category_asc INNER JOIN categories ON game_category_asc.categoryid = categories.id WHERE game_category_asc.gameid = ?;';
         query(GET_ALL_CATEGORIES_BY_GAME, callback, gameid);
     },
 
@@ -21,9 +21,9 @@ export default {
      * @param {import('../utils/callbacks.js').Callback} callback
      */
     insert: (category, callback) => {
-        const CREATE_NEW_CATEGORY_SQL = 'INSERT INTO categories (catname, description) VALUES (?, ?);';
+        const CREATE_NEW_CATEGORY_SQL = 'INSERT INTO categories (catname, description) VALUES (?);';
         const { catname, description } = category;
-        query(CREATE_NEW_CATEGORY_SQL, callback, [catname, description]);
+        query(CREATE_NEW_CATEGORY_SQL, callback, [[catname, description]]);
     },
 
     /**

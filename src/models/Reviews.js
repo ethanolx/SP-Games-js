@@ -15,7 +15,22 @@ export default {
      */
     findByGame: (gameid, callback) => {
         const GET_REVIEWS_BY_GAME_SQL = 'SELECT games.id as gameid, content, rating, username, reviews.created_at FROM ((reviews INNER JOIN games ON reviews.gameid = games.id) INNER JOIN users ON reviews.userid = users.userid) WHERE gameid = ?;';
-        query(GET_REVIEWS_BY_GAME_SQL, callback, gameid);
+        query(GET_REVIEWS_BY_GAME_SQL, callback, gameid, (err, result) => {
+            if (err) {
+                logError(err);
+                return callback(err, null);
+            }
+            else {
+                //@ts-ignore
+                return callback(null, result.map(review => {
+                    const { rating, ...rest } = review;
+                    return {
+                        rating: parseFloat(rating),
+                        ...rest
+                    };
+                }));
+            }
+        });
     },
 
     /**
@@ -25,15 +40,14 @@ export default {
      * @param {import('../utils/callbacks.js').Callback} callback
      */
     insert: (userid, gameid, review, callback) => {
-        const CREATE_NEW_REVIEW_SQL = 'INSERT INTO reviews (userid, gameid, content, rating) VALUES (?, ?, ?, ?);';
-        query(CREATE_NEW_REVIEW_SQL, emptyCallback, [userid, gameid, review.content, review.rating], (err, result) => {
+        const CREATE_NEW_REVIEW_SQL = 'INSERT INTO reviews (userid, gameid, content, rating) VALUES (?);';
+        query(CREATE_NEW_REVIEW_SQL, emptyCallback, [[userid, gameid, review.content, review.rating]], (err, result) => {
             if (err) {
                 logError(err);
-                callback(err, null);
+                return callback(err, null);
             }
             else {
-                //@ts-ignore
-                callback(null, result.insertId);
+                return callback(null, result);
             }
         });
     }

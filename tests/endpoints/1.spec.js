@@ -2,6 +2,7 @@ import fetch from 'node-fetch';
 import colors from 'colors';
 import { TEST_PORT, HOST } from '../../src/config/server.js';
 import { emptyCallback } from '../../src/utils/callbacks.js';
+import compareObjectToSignature from '../../src/utils/checkSignature.js';
 
 export default async () => {
     const MESSAGE = '1.  GET     /users';
@@ -16,39 +17,25 @@ export default async () => {
                 return false;
             }
         })
-        .then(body => {
-            if (body === false) {
-                return body;
-            }
-            else {
-                return body.map(sample => {
-                    const KEYS = Object.keys(sample);
-                    const REQUIRED_KEYS = [
-                        {
-                            key: 'userid',
-                            type: 'number'
-                        },
-                        {
-                            key: 'username',
-                            type: 'string'
-                        },
-                        {
-                            key: 'email',
-                            type: 'string'
-                        },
-                        {
-                            key: 'type',
-                            type: 'string'
-                        },
-                        {
-                            key: 'created_at',
-                            type: 'string'
-                        }
-                    ];
-                    return REQUIRED_KEYS.map(spec => KEYS.includes(spec.key) && spec.type === typeof sample[spec.key]).reduce((a, b) => a && b) && (typeof sample['profile_pic_url'] === 'string' || sample['profile_pic_url'] === null) && ['Customer', 'Admin'].includes(body['type']);
-                }).reduce((a, b) => a && b);
-            }
-        })
+        .then(
+            /**
+             * @param {{}[] | false} body
+             */
+            body => {
+                if (body === false) {
+                    return body;
+                }
+                else {
+                    return body.map(user => compareObjectToSignature(user, {
+                        userid: 'number',
+                        username: 'string',
+                        email: 'string',
+                        type: 'string',
+                        profile_pic_url: 'string?',
+                        created_at: 'string'
+                    })).reduce((a, b) => a && b);
+                }
+            })
         .then(success =>
             (success ? colors.green : colors.red)(MESSAGE)
         )

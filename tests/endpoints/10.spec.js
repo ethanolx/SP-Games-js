@@ -2,9 +2,10 @@ import fetch from 'node-fetch';
 import colors from 'colors';
 import { TEST_PORT, HOST } from '../../src/config/server.js';
 import { emptyCallback } from '../../src/utils/callbacks.js';
-import getCurrentDateTime from '../../src/utils/getCurrentDateTime.js';
+import compareObjectToSignature from '../../src/utils/checkSignature.js';
 
 export default async () => {
+    const MESSAGE = '10. POST    /user/:uid/game/:gid/review';
     return fetch(`http://${ HOST }:${ TEST_PORT }/user/1/game/2/review/`, {
         method: 'POST',
         body: JSON.stringify({
@@ -13,9 +14,24 @@ export default async () => {
         }),
         headers: { 'Content-Type': 'application/json' }
     })
-        .then(res => {
-            const MESSAGE = `10. POST /user/:uid/game/:gid/review | Status: ${ res.status }`;
-            return ((res.status >= 400) ? colors.red(MESSAGE + ` | ${ getCurrentDateTime() }.log`) : colors.green(MESSAGE));
-        })
+        .then(res => (res.status === 201 ? res.json() : false))
+        .then(
+            /**
+             * @param {{}[] | false} body
+             */
+            body => {
+                if (body === false) {
+                    return body;
+                }
+                else {
+                    return compareObjectToSignature(body, {
+                        reviewid: 'number'
+                    });
+                }
+            }
+        )
+        .then(success =>
+            (success ? colors.green : colors.red)(MESSAGE)
+        )
         .catch(emptyCallback);
 };

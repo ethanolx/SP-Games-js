@@ -2,13 +2,33 @@ import fetch from 'node-fetch';
 import colors from 'colors';
 import { TEST_PORT, HOST } from '../../src/config/server.js';
 import { emptyCallback } from '../../src/utils/callbacks.js';
-import getCurrentDateTime from '../../src/utils/getCurrentDateTime.js';
+import compareObjectToSignature from '../../src/utils/checkSignature.js';
 
 export default async () => {
-    return fetch(`http://${ HOST }:${ TEST_PORT }/game/1/review`)
-        .then(res => {
-            const MESSAGE = `11. GET /game/:id/review | Status: ${ res.status }`;
-            return ((res.status >= 400) ? colors.red(MESSAGE + ` | ${ getCurrentDateTime() }.log`) : colors.green(MESSAGE));
-        })
+    const MESSAGE = '11. GET     /game/:id/review';
+    return fetch(`http://${ HOST }:${ TEST_PORT }/game/2/review`)
+        .then(res => (res.status === 200 ? res.json() : false))
+        .then(
+            /**
+             * @param {{}[] | false} body
+             */
+            body => {
+                if (body === false) {
+                    return body;
+                }
+                else {
+                    return body.map(review => compareObjectToSignature(review, {
+                        gameid: 'number',
+                        content: 'string',
+                        rating: 'number',
+                        username: 'string',
+                        created_at: 'string'
+                    })).reduce((a, b) => a && b);
+                }
+            }
+        )
+        .then(success =>
+            (success ? colors.green : colors.red)(MESSAGE)
+        )
         .catch(emptyCallback);
 };

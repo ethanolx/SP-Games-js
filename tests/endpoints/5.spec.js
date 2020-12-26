@@ -5,7 +5,7 @@ import { emptyCallback } from '../../src/utils/callbacks.js';
 
 export default async () => {
     const MESSAGE = '5.  PUT     /category/:id';
-    return fetch(`http://${ HOST }:${ TEST_PORT }/category/3`, {
+    return fetch(`http://${ HOST }:${ TEST_PORT }/category/5`, {
         method: 'PUT',
         body: JSON.stringify({
             catname: "Action",

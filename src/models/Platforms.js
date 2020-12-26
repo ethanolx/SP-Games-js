@@ -2,7 +2,7 @@ import query from '../utils/query.js';
 
 /**
  * @typedef {Object} Platform
- * @property {string} generic_type
+ * @property {string} platform
  * @property {string} version
  */
 
@@ -12,27 +12,16 @@ export default {
      * @param {import('../utils/callbacks.js').Callback} callback
      */
     findId: (platform, callback) => {
-        const GET_PLATFORM_ID_SQL = 'SELECT id FROM platforms WHERE generic_type = ? AND (ISNULL(?) OR version = ?);';
-        query(GET_PLATFORM_ID_SQL, callback, [platform.generic_type, platform.version, platform.version]);
+        const GET_PLATFORM_ID_SQL = 'SELECT id FROM platforms WHERE platform = ? AND (ISNULL(?) OR version = ?);';
+        query(GET_PLATFORM_ID_SQL, callback, [platform.platform, platform.version, platform.version]);
     },
 
     /**
-     * @param {Platform} platform
+     * @param {number} gameid
      * @param {import('../utils/callbacks.js').Callback} callback
      */
-    insert: (platform, callback) => {
-        const CREATE_NEW_PLATFORM_SQL = 'INSERT INTO platforms (generic_type, variant) VALUES (?, ?);';
-        const { generic_type, version } = platform;
-        query(CREATE_NEW_PLATFORM_SQL, callback, [generic_type, version]);
+    findByGame: (gameid, callback) => {
+        const GET_ALL_PLATFORMS_BY_GAME = 'SELECT platforms.id AS pid, platform, version FROM game_platform_asc INNER JOIN platforms ON game_platform_asc.platformid = platforms.id WHERE game_platform_asc.gameid = ?;';
+        query(GET_ALL_PLATFORMS_BY_GAME, callback, gameid);
     },
-
-    /**
-     * @param {Platform} platform
-     * @param {number} pltfid
-     * @param {import('../utils/callbacks.js').Callback} callback
-     */
-    update: (platform, pltfid, callback) => {
-        const UPDATE_EXISTING_PLATFORM_SQL = 'UPDATE platforms ?;';
-        query(UPDATE_EXISTING_PLATFORM_SQL, callback, platform);
-    }
 };

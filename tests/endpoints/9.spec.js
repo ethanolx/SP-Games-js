@@ -2,9 +2,9 @@ import fetch from 'node-fetch';
 import colors from 'colors';
 import { TEST_PORT, HOST } from '../../src/config/server.js';
 import { emptyCallback } from '../../src/utils/callbacks.js';
-import getCurrentDateTime from '../../src/utils/getCurrentDateTime.js';
 
 export default async () => {
+    const MESSAGE = '9.  PUT     /game/:id';
     return fetch(`http://${ HOST }:${ TEST_PORT }/game/3`, {
         method: 'PUT',
         body: JSON.stringify({
@@ -17,9 +17,9 @@ export default async () => {
         }),
         headers: { 'Content-Type': 'application/json' }
     })
-        .then(res => {
-            const MESSAGE = `9. PUT /game/:id | Status: ${ res.status }`;
-            return ((res.status >= 400) ? colors.red(MESSAGE + ` | ${ getCurrentDateTime() }.log`) : colors.green(MESSAGE));
-        })
+        .then(res => res.status === 204)
+        .then(success =>
+            (success ? colors.green : colors.red)(MESSAGE)
+        )
         .catch(emptyCallback);
 };

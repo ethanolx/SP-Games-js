@@ -2,6 +2,7 @@ import fetch from 'node-fetch';
 import colors from 'colors';
 import { TEST_PORT, HOST } from '../../src/config/server.js';
 import { emptyCallback } from '../../src/utils/callbacks.js';
+import compareObjectToSignature from '../../src/utils/checkSignature.js';
 
 export default async () => {
     const MESSAGE = '3.  GET     /users/:id';
@@ -16,37 +17,26 @@ export default async () => {
                 return false;
             }
         })
-        .then(/**@returns {boolean} */ body => {
-            if (body === false) {
-                return body;
-            }
-            else {
-                const KEYS = Object.keys(body);
-                const REQUIRED_KEYS = [
-                    {
-                        key: 'userid',
-                        type: 'number'
-                    },
-                    {
-                        key: 'username',
-                        type: 'string'
-                    },
-                    {
-                        key: 'email',
-                        type: 'string'
-                    },
-                    {
-                        key: 'type',
-                        type: 'string'
-                    },
-                    {
-                        key: 'created_at',
-                        type: 'string'
-                    }
-                ];
-                return REQUIRED_KEYS.map(spec => KEYS.includes(spec.key) && spec.type === typeof body[spec.key]).reduce((a, b) => a && b) && (typeof body['profile_pic_url'] === 'string' || body['profile_pic_url'] === null) && ['Customer', 'Admin'].includes(body['type']);
-            }
-        })
+        .then(
+            /**
+             * @param {{}[] | false} body
+             * @returns {boolean}
+             */
+            body => {
+                if (body === false) {
+                    return body;
+                }
+                else {
+                    return compareObjectToSignature(body, {
+                        userid: 'number',
+                        username: 'string',
+                        email: 'string',
+                        profile_pic_url: 'string?',
+                        type: 'string',
+                        created_at: 'string'
+                    });
+                }
+            })
         .then(success =>
             (success ? colors.green : colors.red)(MESSAGE)
         )

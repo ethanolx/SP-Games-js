@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Supported Endpoints</title>
+    <style>
+        * {
+            text-align: left;
+        }
+
+        body,
+        table {
+            margin: auto;
+            width: 90%;
+        }
+
+        table,
+        tr,
+        th,
+        td {
+            border: solid 1px black;
+        }
+
+        th,
+        td {
+            padding-left: 0.8em;
+        }
+
+        tr {
+            height: 1.5em;
+        }
+
+    </style>
+</head>
+
+<body>
+    <h1>Consume our APIs at http://$host$:$port$</h1>
+    <h3>We support the following endpoints:</h3>
+    <table>
+        <thead>
+            <tr>
+                <th>Method</th>
+                <th>Route</th>
+                <th>Purpose</th>
+                <th>Response Codes</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>GET</td>
+                <td rowspan="2">/users</td>
+                <td></td>
+                <td></td>
+            </tr>
+            <tr>
+                <td>POST</td>
+                <td></td>
+                <td></td>
+            </tr>
+            <tr>
+                <td>GET</td>
+                <td>/users/:id</td>
+                <td></td>
+                <td></td>
+            </tr>
+            <tr>
+                <td>POST</td>
+                <td>/category</td>
+                <td></td>
+                <td></td>
+            </tr>
+            <tr>
+                <td>PUT</td>
+                <td>/category/:id</td>
+                <td></td>
+                <td></td>
+            </tr>
+            <tr>
+                <td>POST</td>
+                <td>/game</td>
+                <td></td>
+                <td></td>
+            </tr>
+            <tr>
+                <td>GET</td>
+                <td>/games/:platform?version</td>
+                <td></td>
+                <td></td>
+            </tr>
+            <tr>
+                <td>DELETE</td>
+                <td rowspan="2">/game/:id</td>
+                <td></td>
+                <td></td>
+            </tr>
+            <tr>
+                <td>PUT</td>
+                <td></td>
+                <td></td>
+            </tr>
+            <tr>
+                <td>POST</td>
+                <td>/user/:uid/game/:gid/review</td>
+                <td></td>
+                <td></td>
+            </tr>
+            <tr>
+                <td>GET</td>
+                <td>/game/:id/review</td>
+                <td></td>
+                <td></td>
+            </tr>
+            <tr>
+                <td>GET</td>
+                <td>/game/:gid/image/info</td>
+                <td></td>
+                <td></td>
+            </tr>
+            <tr>
+                <td>GET</td>
+                <td rowspan="2">/game/:gid/image</td>
+                <td></td>
+                <td></td>
+            </tr>
+            <tr>
+                <td>POST</td>
+                <td></td>
+                <td></td>
+            </tr>
+        </tbody>
+    </table>
+</body>
+
+</html>

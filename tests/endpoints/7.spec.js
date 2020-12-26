@@ -2,6 +2,7 @@ import fetch from 'node-fetch';
 import colors from 'colors';
 import { TEST_PORT, HOST } from '../../src/config/server.js';
 import { emptyCallback } from '../../src/utils/callbacks.js';
+import compareObjectToSignature from '../../src/utils/checkSignature.js';
 
 export default async () => {
     const MESSAGE = '7.  GET     /games/:platform';
@@ -9,48 +10,36 @@ export default async () => {
         method: 'GET'
     })
         .then(res => (res.status === 200 ? res.json() : false))
-        .then(body => {
-            if (body === false) {
-                return body;
-            }
-            else {
-                return body.map(sample => {
-                    const KEYS = Object.keys(sample);
-                    const REQUIRED_KEYS = [
-                        {
-                            key: 'gameid',
-                            type: 'number'
-                        },
-                        {
-                            key: 'title',
-                            type: 'string'
-                        },
-                        {
-                            key: 'description',
-                            type: 'string'
-                        },
-                        {
-                            key: 'price',
-                            type: 'string'
-                        },
-                        {
-                            key: 'year',
-                            type: 'string'
-                        },
-                        {
-                            key: 'created_at',
-                            type: 'string'
-                        }
-                    ];
-                    return REQUIRED_KEYS.map(spec => KEYS.includes(spec.key) && spec.type === typeof sample[spec.key]).reduce((a, b) => a && b) &&
-                        sample['platforms'] instanceof Array &&
-                        sample['platforms'].map(p => typeof p === 'string').reduce((a, b) => a && b) &&
-                        sample['categories'] instanceof Array;
-                }).reduce((a, b) => a && b);
-            }
-        })
-        .then(success => {
-            (success ? colors.green : colors.red)(MESSAGE);
-        })
+        .then(
+            /**
+             * @param {{}[] | false} body
+             */
+            body => {
+                if (body === false) {
+                    return body;
+                }
+                else {
+                    return body.map(game => compareObjectToSignature(game, {
+                        gameid: 'number',
+                        title: 'string',
+                        description: 'string',
+                        price: 'number',
+                        platforms: [{
+                            pid: 'number',
+                            platform: 'string',
+                            version: 'string?'
+                        }],
+                        categories: [{
+                            catid: 'number',
+                            catname: 'string'
+                        }],
+                        year: 'number?',
+                        created_at: 'string'
+                    })).reduce((a, b) => a && b);
+                }
+            })
+        .then(success =>
+            (success ? colors.green : colors.red)(MESSAGE)
+        )
         .catch(emptyCallback);
 };
