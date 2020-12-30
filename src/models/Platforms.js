@@ -1,22 +1,26 @@
+// Imports
 import query from '../utils/query.js';
 
 /**
+ * Object representing a gaming platform
  * @typedef {Object} Platform
- * @property {string} platform
- * @property {string} version
+ * @property {string} platform          - Generic platform (i.e. Xbox, PC, Mobile)
+ * @property {string | null} version    - More specific platform type (i.e. Xbox One, Mobile iOS)
  */
 
 export default {
     /**
+     * Find the id(s) of the selected platform(s)
      * @param {Platform} platform
      * @param {import('../utils/callbacks.js').Callback} callback
      */
-    findId: (platform, callback) => {
+    findIds: (platform, callback) => {
         const GET_PLATFORM_ID_SQL = 'SELECT id FROM platforms WHERE platform = ? AND (ISNULL(?) OR version = ?);';
         query(GET_PLATFORM_ID_SQL, callback, [platform.platform, platform.version, platform.version]);
     },
 
     /**
+     * Find the platforms supported for a selected game
      * @param {number} gameid
      * @param {import('../utils/callbacks.js').Callback} callback
      */

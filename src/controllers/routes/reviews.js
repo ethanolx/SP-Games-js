@@ -1,6 +1,5 @@
 // Dependencies
-import express from 'express';
-import { json, urlencoded } from 'body-parser';
+import express, { json, urlencoded } from 'express';
 
 // Utilities
 import { invalidBody, invalidId } from '../../utils/common-errors.js';
@@ -18,13 +17,19 @@ router.use(urlencoded({ extended: false }));
 // Route Handlers
 router.route('/game/:id/review')
     .get((req, res) => {
+        // Extract and Process Data
         const GAME_ID = parseInt(req.params.id);
+
+        // Evaluate Data and Respond
         if (invalidId(req.params.id, res)) {
             return;
         }
         Reviews.findByGame(GAME_ID, (err, result) => {
             if (err) {
                 res.sendStatus(500);
+            }
+            else if (result === null) {
+                res.sendStatus(404);
             }
             else {
                 res.status(200).json(result);
@@ -34,11 +39,16 @@ router.route('/game/:id/review')
 
 router.route('/user/:uid/game/:gid/review')
     .post((req, res) => {
-        /**@type {import('../../models/Reviews.js').Review} */
+        // Extract Data
+        /** @type {import('../../models/Reviews.js').Review} */
         const REVIEW = req.body;
         const { uid, gid } = req.params;
+
+        // Process Data
         const USER_ID = parseInt(uid);
         const GAME_ID = parseInt(gid);
+
+        // Evaluate Data and Respond
         if (invalidId(uid, res) || invalidId(gid, res) || invalidBody(REVIEW, {
             content: 'string',
             rating: 'number'

@@ -1,22 +1,26 @@
+// Imports
 import { logError } from "./logs.js";
 
 /**
- * @typedef {(queryErr: import("mysql2").QueryError | null, result: import("mysql2").RowDataPacket[] | import("mysql2").RowDataPacket[][] | import("mysql2").OkPacket | import("mysql2").OkPacket[] | import("mysql2").ResultSetHeader | null) => void} Callback
+ * Common structure for callbacks in mysql queries
+ * @callback Callback
+ * @param {import("mysql2").QueryError | null} queryError
+ * @param {import("mysql2").RowDataPacket[] | import("mysql2").RowDataPacket[][] | import("mysql2").OkPacket | import("mysql2").OkPacket[] | import("mysql2").ResultSetHeader | null} result
+ * @returns {void}
  */
 
 /**
- * @param {Error} err
- */
-export const throwErr = (err) => { throw err; };
-
-/**
+ * Logs an error if received
  * @param {Error} err
  * @param {any} result
  */
-export const simpleCallbackErrorHandler = (err, result) => { if (err) { logError(err); } };
+function simpleCallbackErrorHandler(err, result) { if (err) { logError(err); } };
 
 /**
+ * Empty callback function
  * @param {any} [_]
  * @param {any} [__]
  */
-export const emptyCallback = (_ = undefined, __ = undefined) => { };
+function emptyCallback(_ = undefined, __ = undefined) { };
+
+export { emptyCallback, simpleCallbackErrorHandler };

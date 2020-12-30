@@ -1,8 +1,8 @@
 import fetch from 'node-fetch';
 import colors from 'colors';
-import { TEST_PORT, HOST } from '../../src/config/server.js';
+import { TEST_PORT, HOST } from '../../src/config/server.config.js';
 import { emptyCallback } from '../../src/utils/callbacks.js';
-import compareObjectToSignature from '../../src/utils/checkSignature.js';
+import compareObjectToSignature from '../../src/utils/compare-object-to-signature.js';
 
 export default async () => {
     const MESSAGE = '7.  GET     /games/:platform';

@@ -1,7 +1,19 @@
-import getConnection from '../config/database.js';
+// Imports
+import getConnection from '../config/database.config.js';
 import { logError, logHistory } from './logs.js';
 
 /**
+ * ## Usual process of querying MySQL Server
+ *
+ * + ERROR:
+ *      - log error
+ *      - handle the error
+ * + NO ERROR:
+ *      - handle the result
+ * + EITHER CASE:
+ *      - log MySQL query
+ *
+ * \* _A custom function can be provided to handle errors & results differently_
  * @param {string} sql
  * @param {import('./callbacks.js').Callback} fn
  * @param {any} [params]
@@ -9,22 +21,22 @@ import { logError, logHistory } from './logs.js';
  * @returns {void}
  */
 export default (sql, fn, params = null, customFn = null) => {
-    const conn = getConnection();
-    conn.connect(connErr => {
+    const CONN = getConnection();
+    CONN.connect(connErr => {
         if (connErr) {
             logError(connErr);
-            conn.end();
+            CONN.end();
         }
         else {
             /** @type {import('mysql2/typings/mysql/lib/protocol/sequences/Query')} */
             let query;
             if (customFn === null) {
-                query = conn.query(sql, params, (queryErr, result) => {
+                query = CONN.query(sql, params, (queryErr, result) => {
                     logHistory(query.sql, (queryErr ? false : true), {
-                        user: conn.config.user || 'unknown',
-                        database: conn.config.database || 'unknown'
+                        user: CONN.config.user || 'unknown',
+                        database: CONN.config.database || 'unknown'
                     });
-                    conn.end();
+                    CONN.end();
                     if (queryErr) {
                         logError(queryErr);
                         return fn(queryErr, null);
@@ -38,12 +50,12 @@ export default (sql, fn, params = null, customFn = null) => {
                 });
             }
             else {
-                query = conn.query(sql, params, (queryErr, result) => {
+                query = CONN.query(sql, params, (queryErr, result) => {
                     logHistory(query.sql, (queryErr ? false : true), {
-                        user: conn.config.user || 'unknown',
-                        database: conn.config.database || 'unknown'
+                        user: CONN.config.user || 'unknown',
+                        database: CONN.config.database || 'unknown'
                     });
-                    conn.end();
+                    CONN.end();
                     return customFn(queryErr, result);
                 });
             }

@@ -1,16 +1,19 @@
+// Imports
 import query from '../utils/query.js';
 
 /**
+ * Object representing each user
  * @typedef {Object} User
- * @property {string} username
- * @property {string} email
- * @property {UserType} type
- * @property {string} [profile_pic_url]
+ * @property {string} username              - Username of a user
+ * @property {string} email                 - User's email
+ * @property {'Admin' | 'Customer'} type    - Type of a user (either Admin or Customer)
+ * @property {string} [profile_pic_url]     - URL to a user's profile pic (optional)
  */
 
 export default {
 
     /**
+     * Find all users
      * @param {import('../utils/callbacks.js').Callback} callback
      */
     findAll: (callback) => {
@@ -19,6 +22,7 @@ export default {
     },
 
     /**
+     * Find one user by id
      * @param {number} userID
      * @param {import('../utils/callbacks.js').Callback} callback
      */
@@ -28,6 +32,7 @@ export default {
     },
 
     /**
+     * Create a new user
      * @param {User} user
      * @param {import('../utils/callbacks.js').Callback} callback
      */

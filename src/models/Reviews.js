@@ -1,15 +1,17 @@
+// Imports
 import query from '../utils/query.js';
-import { emptyCallback } from '../utils/callbacks.js';
 import { logError } from '../utils/logs.js';
 
 /**
+ * Object representing a user's review for a game
  * @typedef {Object} Review
- * @property {string} content
- * @property {number} rating
+ * @property {string} content   - Feedback on the game
+ * @property {number} rating    - Rating of the game (out of 10)
  */
 
 export default {
     /**
+     * Find all reviews for a game
      * @param {number} gameid
      * @param {import('../utils/callbacks.js').Callback} callback
      */
@@ -22,33 +24,34 @@ export default {
             }
             else {
                 //@ts-ignore
-                return callback(null, result.map(review => {
-                    const { rating, ...rest } = review;
-                    return {
-                        rating: parseFloat(rating),
-                        ...rest
-                    };
-                }));
+                if (result.length === 0) {
+                    return callback(null, null);
+                }
+                else {
+                    //@ts-ignore
+                    const REVIEWS = result.map(review => {
+                        const { rating, ...rest } = review;
+                        return {
+                            rating: parseFloat(rating),
+                            ...rest
+                        };
+                    });
+                    return callback(null, REVIEWS);
+                }
             }
         });
     },
 
     /**
+     * Create a new review
      * @param {number} userid
      * @param {number} gameid
      * @param {Review} review
      * @param {import('../utils/callbacks.js').Callback} callback
      */
     insert: (userid, gameid, review, callback) => {
+        const { content: CONTENT, rating: RATING } = review;
         const CREATE_NEW_REVIEW_SQL = 'INSERT INTO reviews (userid, gameid, content, rating) VALUES (?);';
-        query(CREATE_NEW_REVIEW_SQL, emptyCallback, [[userid, gameid, review.content, review.rating]], (err, result) => {
-            if (err) {
-                logError(err);
-                return callback(err, null);
-            }
-            else {
-                return callback(null, result);
-            }
-        });
+        query(CREATE_NEW_REVIEW_SQL, callback, [[userid, gameid, CONTENT, RATING]]);
     }
 };

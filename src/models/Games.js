@@ -1,35 +1,55 @@
-import query from '../utils/query.js';
-import Categories from './Categories.js';
-import { emptyCallback } from '../utils/callbacks.js';
+// Dependencies
 import { promisify } from 'util';
-import { logError } from '../utils/logs.js';
+
+// Models
+import Categories from './Categories.js';
 import Platforms from './Platforms.js';
-import G_P from './associative/G_P.js';
 import G_C from './associative/G_C.js';
+import G_P from './associative/G_P.js';
+
+// Utilities
+import query from '../utils/query.js';
+import { logError } from '../utils/logs.js';
+import { emptyCallback } from '../utils/callbacks.js';
 
 /**
+ * Object representing an electronic game (online or offline)
  * @typedef {Object} Game
- * @property {string} title
- * @property {string} description
- * @property {number} price
- * @property {number[]} platformids
- * @property {number[]} categoryids
- * @property {number} year
+ * @property {string} title             - Title of game
+ * @property {string} description       - Short sypnosis of game
+ * @property {number} price             - Price of game (2 d.p.)
+ * @property {number[]} platformids     - Platforms supported for game
+ * @property {number[]} categoryids     - Genres of game
+ * @property {number} year              - The year in which the game was released
  */
 
 const Games = {
     /**
+     * Find all games of a platform
      * @param {string} platform
      * @param {string} version
      * @param {import('../utils/callbacks.js').Callback} callback
      */
     findByPlatform: (platform, version, callback) => {
-        Platforms.findId({ platform: platform, version: version }, (err, wrapper) => {
-            Games.findByPlatformId(wrapper[0]['id'], callback);
+        Platforms.findIds({ platform: platform, version: version }, (err, ids) => {
+            if (err) {
+                logError(err);
+                return callback(err, null);
+            }
+            else if (ids === null) {
+                return callback(null, null);
+            }
+            else {
+                /**@type {number[]} */
+                //@ts-ignore
+                const IDS = ids.map(wrapper => wrapper['id']);
+                return Games.findByPlatformIds(IDS, callback);
+            }
         });
     },
 
     /**
+     * Upload a new game
      * @param {Game} game
      * @param {import('../utils/callbacks.js').Callback} callback
      */
@@ -66,6 +86,7 @@ const Games = {
     },
 
     /**
+     * Edit the details of a previously uploaded game
      * @param {Game} game
      * @param {number} gameid
      * @param {import('../utils/callbacks.js').Callback} callback
@@ -99,6 +120,7 @@ const Games = {
     },
 
     /**
+     * Remove a previously uploaded game
      * @param {number} gameid
      * @param {import('../utils/callbacks.js').Callback} callback
      */
@@ -108,6 +130,7 @@ const Games = {
     },
 
     /**
+     * Delete all categories of a game
      * @param {number} gameid
      * @param {import('../utils/callbacks.js').Callback} callback
      */
@@ -117,6 +140,7 @@ const Games = {
     },
 
     /**
+     * Delete all platforms of a game
      * @param {number} gameid
      * @param {import('../utils/callbacks.js').Callback} callback
      */
@@ -126,6 +150,7 @@ const Games = {
     },
 
     /**
+     * Find games by ids
      * @param {number[]} gameids
      * @param {import('../utils/callbacks.js').Callback} callback
      */
@@ -150,40 +175,40 @@ const Games = {
     },
 
     /**
-     * @param {number} platformid
+     * Find games which support a platform (id)
+     * @param {number[]} platformids
      * @param {import('../utils/callbacks.js').Callback} callback
      */
-    findByPlatformId: (platformid, callback) => {
-        const GET_ALL_GAMES_BY_PLATFORM_SQL = 'SELECT gameid FROM game_platform_asc WHERE platformid = ?;';
-        query(GET_ALL_GAMES_BY_PLATFORM_SQL, emptyCallback, platformid, (err, gameids) => {
+    findByPlatformIds: (platformids, callback) => {
+        const GET_ALL_GAMES_BY_PLATFORM_SQL = 'SELECT gameid FROM game_platform_asc WHERE platformid in (?);';
+        query(GET_ALL_GAMES_BY_PLATFORM_SQL, emptyCallback, [platformids], async (err, gameids) => {
             if (err) {
                 logError(err);
                 return callback(err, null);
             }
             else {
-                if (gameids instanceof Array) {
-                    if (gameids.length === 0) {
-                        return callback(null, null);
+                //@ts-ignore
+                if (gameids.length === 0) {
+                    return callback(null, null);
+                }
+                else {
+                    //@ts-ignore
+                    const GAMES = await promisify(Games.findByGameIds)(gameids.map(wrapper => wrapper.gameid)).catch(logError);
+                    let gamesDetailed = [];
+                    // @ts-ignore
+                    for (let game of GAMES) {
+                        const CATEGORIES = await promisify(Categories.findByGame)(game.gameid).catch(logError);
+                        const PLATFORMS = await promisify(Platforms.findByGame)(game.gameid).catch(logError);
+                        gamesDetailed.push({ ...game, categories: CATEGORIES, platforms: PLATFORMS });
                     }
-                    else {
-                        (async () => {
-                            const GAMES = await promisify(Games.findByGameIds)(gameids.map(wrapper => wrapper.gameid)).catch(logError);
-                            let g = [];
-                            // @ts-ignore
-                            for (let game of GAMES) {
-                                const CATEGORIES = await promisify(Categories.findByGame)(game.gameid).catch(logError);
-                                const PLATFORMS = await promisify(Platforms.findByGame)(game.gameid).catch(logError);
-                                g.push({ ...game, categories: CATEGORIES, platforms: PLATFORMS });
-                            }
-                            return g;
-                        })().then(g => callback(null, g)).catch(logError);
-                    }
+                    return callback(null, gamesDetailed);
                 }
             }
         });
     },
 
     /**
+     * Find one game by its id
      * @param {number} gameid
      * @param {import('../utils/callbacks.js').Callback} callback
      */

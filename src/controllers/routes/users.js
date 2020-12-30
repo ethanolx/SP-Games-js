@@ -1,6 +1,5 @@
 // Dependencies
-import express from 'express';
-import { json, urlencoded } from 'body-parser';
+import express, { json, urlencoded } from 'express';
 
 // Utilities
 import { invalidBody, invalidId } from '../../utils/common-errors.js';
