@@ -39,7 +39,7 @@ CREATE TABLE `categories` (
 
 LOCK TABLES `categories` WRITE;
 /*!40000 ALTER TABLE `categories` DISABLE KEYS */;
-INSERT INTO `categories` VALUES (1,'Puzzle','Brain-racking and intriguing, these challenges are sure to elicit an \'Ah Ha!\' from you','2020-12-26 06:51:50'),(2,'First Person Shooter','You play from the perspective of the protagonist, fulfilling objectives to win','2020-12-26 06:51:50'),(3,'E-Sports','Get a workout without having to leave your house!','2020-12-26 06:51:50'),(4,'Text Adventures','Origin of all games to date. The original, if you will.','2020-12-26 06:51:50');
+INSERT INTO `categories` VALUES (1,'Puzzle','Brain-racking and intriguing, these challenges are sure to elicit an \'Ah Ha!\' from you','2020-12-30 13:46:37'),(2,'First Person Shooter','You play from the perspective of the protagonist, fulfilling objectives to win','2020-12-30 13:46:37'),(3,'E-Sports','Get a workout without having to leave your house!','2020-12-30 13:46:37'),(4,'Text Adventures','Origin of all games to date. The original, if you will.','2020-12-30 13:46:37');
 /*!40000 ALTER TABLE `categories` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -90,7 +90,7 @@ CREATE TABLE `game_platform_asc` (
   KEY `platformid` (`platformid`),
   CONSTRAINT `game_platform_asc_ibfk_1` FOREIGN KEY (`gameid`) REFERENCES `games` (`id`) ON DELETE CASCADE,
   CONSTRAINT `game_platform_asc_ibfk_2` FOREIGN KEY (`platformid`) REFERENCES `platforms` (`id`) ON DELETE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -99,7 +99,7 @@ CREATE TABLE `game_platform_asc` (
 
 LOCK TABLES `game_platform_asc` WRITE;
 /*!40000 ALTER TABLE `game_platform_asc` DISABLE KEYS */;
-INSERT INTO `game_platform_asc` VALUES (1,1,1),(2,1,2),(3,2,1);
+INSERT INTO `game_platform_asc` VALUES (1,1,1),(2,1,2),(3,1,3),(4,1,4),(5,2,1),(6,2,2);
 /*!40000 ALTER TABLE `game_platform_asc` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -129,7 +129,7 @@ CREATE TABLE `games` (
 
 LOCK TABLES `games` WRITE;
 /*!40000 ALTER TABLE `games` DISABLE KEYS */;
-INSERT INTO `games` VALUES (1,'Call of Duty','Call of Duty is a first-person shooter video game based on id Tech 3, and was released on October 29, 2003. The game was developed by Infinity Ward and published by Activision. The game simulates the infantry and combined arms warfare of World War II.',26.99,2003,'2020-12-26 06:51:50'),(2,'Baba is You','Baba Is You is an award-winning puzzle game where you can change the rules by which you play. In every level, the rules themselves are present as blocks you can interact with; by manipulating them, you can change how the level works and cause surprising, unexpected interactions!',5.60,2019,'2020-12-26 06:51:50');
+INSERT INTO `games` VALUES (1,'Call of Duty','Call of Duty is a first-person shooter video game based on id Tech 3, and was released on October 29, 2003. The game was developed by Infinity Ward and published by Activision. The game simulates the infantry and combined arms warfare of World War II.',26.99,2003,'2020-12-30 13:46:37'),(2,'Baba is You','Baba Is You is an award-winning puzzle game where you can change the rules by which you play. In every level, the rules themselves are present as blocks you can interact with; by manipulating them, you can change how the level works and cause surprising, unexpected interactions!',5.60,2019,'2020-12-30 13:46:37');
 /*!40000 ALTER TABLE `games` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -156,7 +156,7 @@ CREATE TABLE `platforms` (
 
 LOCK TABLES `platforms` WRITE;
 /*!40000 ALTER TABLE `platforms` DISABLE KEYS */;
-INSERT INTO `platforms` VALUES (1,'PC','macOS','2020-12-26 06:51:50'),(2,'PC','Windows','2020-12-26 06:51:50'),(3,'Mobile','Android','2020-12-26 06:51:50'),(4,'Mobile','iOS','2020-12-26 06:51:50'),(5,'Xbox','360','2020-12-26 06:51:50'),(6,'Xbox','One','2020-12-26 06:51:50'),(7,'Playstation','1','2020-12-26 06:51:50'),(8,'Playstation','2','2020-12-26 06:51:50'),(9,'Playstation','3','2020-12-26 06:51:50'),(10,'Playstation','4','2020-12-26 06:51:50'),(11,'Playstation','5','2020-12-26 06:51:50'),(12,'Playstation','Portable','2020-12-26 06:51:50'),(13,'Nintendo','3DS','2020-12-26 06:51:50'),(14,'Nintendo','Game Boy','2020-12-26 06:51:50'),(15,'Nintendo','Switch','2020-12-26 06:51:50'),(16,'Nintendo','Wii','2020-12-26 06:51:50');
+INSERT INTO `platforms` VALUES (1,'PC','macOS','2020-12-30 13:46:37'),(2,'PC','Windows','2020-12-30 13:46:37'),(3,'Mobile','Android','2020-12-30 13:46:37'),(4,'Mobile','iOS','2020-12-30 13:46:37'),(5,'Xbox','360','2020-12-30 13:46:37'),(6,'Xbox','One','2020-12-30 13:46:37'),(7,'Playstation','1','2020-12-30 13:46:37'),(8,'Playstation','2','2020-12-30 13:46:37'),(9,'Playstation','3','2020-12-30 13:46:37'),(10,'Playstation','4','2020-12-30 13:46:37'),(11,'Playstation','5','2020-12-30 13:46:37'),(12,'Playstation','Portable','2020-12-30 13:46:37'),(13,'Nintendo','3DS','2020-12-30 13:46:37'),(14,'Nintendo','Game Boy','2020-12-30 13:46:37'),(15,'Nintendo','Switch','2020-12-30 13:46:37'),(16,'Nintendo','Wii','2020-12-30 13:46:37');
 /*!40000 ALTER TABLE `platforms` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -189,7 +189,7 @@ CREATE TABLE `reviews` (
 
 LOCK TABLES `reviews` WRITE;
 /*!40000 ALTER TABLE `reviews` DISABLE KEYS */;
-INSERT INTO `reviews` VALUES (1,1,2,'While the rules are simple, the game is not.',8.6,'2020-12-26 06:51:50'),(2,1,1,'Great game, shame about the politics',7.0,'2020-12-26 06:51:50'),(3,3,1,'Call of Duty (COD) is a shooter that you shouldn\'t miss. The excellent campaign and fun online modes guarantee hundreds of hours of entertainment and fun.',8.0,'2020-12-26 06:51:50'),(4,4,2,'I don\'t really like Puzzle games, because I\'m to dumb for them. But this Game is so awesome and cute and it\'s one of the best Games I\'ve ever played.',7.6,'2020-12-26 06:51:50');
+INSERT INTO `reviews` VALUES (1,1,2,'While the rules are simple, the game is not.',8.6,'2020-12-30 13:46:37'),(2,1,1,'Great game, shame about the politics',7.0,'2020-12-30 13:46:37'),(3,3,1,'Call of Duty (COD) is a shooter that you shouldn\'t miss. The excellent campaign and fun online modes guarantee hundreds of hours of entertainment and fun.',8.0,'2020-12-30 13:46:37'),(4,4,2,'I don\'t really like Puzzle games, because I\'m to dumb for them. But this Game is so awesome and cute and it\'s one of the best Games I\'ve ever played.',7.6,'2020-12-30 13:46:37');
 /*!40000 ALTER TABLE `reviews` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -220,7 +220,7 @@ CREATE TABLE `users` (
 
 LOCK TABLES `users` WRITE;
 /*!40000 ALTER TABLE `users` DISABLE KEYS */;
-INSERT INTO `users` VALUES (1,'ethanolx','ethan@gmail.com','Admin',NULL,'2020-12-26 06:51:50'),(2,'Mary101','m101@yahoo.com.sg','Customer',NULL,'2020-12-26 06:51:50'),(3,'JSmith','johnsmith@x.net','Customer',NULL,'2020-12-26 06:51:50'),(4,'Jane Smithsonian','jsx@abc.mail','Customer',NULL,'2020-12-26 06:51:50'),(5,'F00D4L1F3','joel@git.git','Admin',NULL,'2020-12-26 06:51:50');
+INSERT INTO `users` VALUES (1,'ethanolx','ethan@gmail.com','Admin',NULL,'2020-12-30 13:46:37'),(2,'Mary101','m101@yahoo.com.sg','Customer',NULL,'2020-12-30 13:46:37'),(3,'JSmith','johnsmith@x.net','Customer',NULL,'2020-12-30 13:46:37'),(4,'Jane Smithsonian','jsx@abc.mail','Customer',NULL,'2020-12-30 13:46:37'),(5,'F00D4L1F3','joel@git.git','Admin',NULL,'2020-12-30 13:46:37');
 /*!40000 ALTER TABLE `users` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
@@ -233,4 +233,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2020-12-26 14:53:49
+-- Dump completed on 2020-12-30 21:48:02

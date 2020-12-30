@@ -154,7 +154,7 @@ router.route('/game/:gid/image')
             if (err) {
                 res.sendStatus(500);
             }
-            else if (result instanceof Array && result.length === 0) {
+            else if ((result instanceof Array && result.length === 0) || result === null) {
                 res.status(422).json({ message: 'Game does not exist' });
             }
             else {

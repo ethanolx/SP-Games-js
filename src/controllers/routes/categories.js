@@ -30,7 +30,7 @@ router.route('/category')
                 switch (err.code) {
                     case 'ER_DUP_KEY':
                     case 'ER_DUP_ENTRY':
-                        res.status(422).json({ message: `The category ${ CATEGORY.catname } already exists` });
+                        res.status(422).json({ message: `The category \'${ CATEGORY.catname }\' already exists` });
                         break;
                     default:
                         res.sendStatus(500);
@@ -59,7 +59,7 @@ router.route('/category/:id')
                 switch (err.code) {
                     case 'ER_DUP_KEY':
                     case 'ER_DUP_ENTRY':
-                        res.status(422).json({ message: `The category ${ CATEGORY.catname } already exists` });
+                        res.status(422).json({ message: `The category \'${ CATEGORY.catname }\' already exists` });
                         break;
                     default:
                         res.sendStatus(500);

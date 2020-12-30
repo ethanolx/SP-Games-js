@@ -6,7 +6,7 @@ import compareObjectToSignature from '../../src/utils/compare-object-to-signatur
 
 export default async () => {
     const MESSAGE = '10. POST    /user/:uid/game/:gid/review';
-    return fetch(`http://${ HOST }:${ TEST_PORT }/user/1/game/2/review/`, {
+    return fetch(`http://${ HOST }:${ TEST_PORT }/user/1/game/3/review/`, {
         method: 'POST',
         body: JSON.stringify({
             content: "Enjoyed the game! The story and gameplay was good!",

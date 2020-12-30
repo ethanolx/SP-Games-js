@@ -1,10 +1,12 @@
 # SP Games
 
-|                   |   |                         |
-|-------------------|---|-------------------------|
-|   Author          | : |     Ethan Tan Wee En    |
-|   Languages       | : |     JS, HTML, (CSS)     |
-|   Date            | : |     December 2020       |
+|                   |   |                       |
+|-------------------|---|-----------------------|
+|   Author          | : |   Ethan Tan Wee En    |
+|   Admin No.       | : |   p2012085            |
+|   Class           | : |   DAAA/1B/03          |
+|   Languages       | : |   JS, HTML, (CSS)     |
+|   Date            | : |   December 2020       |
 
 ## Program
 
@@ -12,15 +14,25 @@
 
 1. Install NodeJS locally (at least v14.0)
 2. Ensure npm is installed too (run `npm --version`)
-3. Navigate to 'SP Games' directory through command line
+3. Install MySQL Server
+4. Set MySQL Server `root` password
+5. Run the following SQL Scripts (either 1 or 2):
+    1. init.sql & data.sql
+    2. dump.sql
+6. Navigate to 'SP Games' directory through command line
+7. Configure MySQL `root` configurations in the following files:
+    - `src/config/database.config.js`
+    - `src/tests/reset-database.js`
+8. Configure Express Server API settings in the following file:
+    - `src/config/server.config.js`
 
 ### Run Program
 
-3. Run `npm start`
+9. Run `npm start`
 
 ### Run Tests
 
-3. Run `npm test`
+9. Run `npm test`
 
 ## File Structure
 
@@ -95,7 +107,6 @@
 ## API Coverage
 ---
 ### Endpoints supported:
-<br />
 
 |   No. |   Method  |   Route                                       |   Body?   |   Code    |
 |-------|-----------|-----------------------------------------------|-----------|-----------|
@@ -114,8 +125,6 @@
 |   13  |   GET     |   <a id='get-img'></a>/game/:gid/image        |   NO      |   200     |
 |   14  |   GET     |   <a id='get-info'></a>/game/:gid/image/info  |   NO      |   200     |
 
-<br />
-
 ## Extra Features
 
 1.  [Endpoint for upload of game images](#post-img)
@@ -128,8 +137,6 @@
 8.  Program testing
 9.  More specific error response codes (404, 415, 422, etc.)
 10. Code organisation and JSDoc annotations
-
-<br />
 
 ## See Also
 

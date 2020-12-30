@@ -5,7 +5,7 @@ import { emptyCallback } from '../../src/utils/callbacks.js';
 
 export default async () => {
     const MESSAGE = '8.  DELETE  /game/:id';
-    return fetch(`http://${ HOST }:${ TEST_PORT }/game/1`, {
+    return fetch(`http://${ HOST }:${ TEST_PORT }/game/2`, {
         method: 'DELETE'
     })
         .then(res => res.status === 204)

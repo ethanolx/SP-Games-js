@@ -11,8 +11,8 @@ export default async () => {
             title: "Assassin’s Creed Valhalla",
             description: "Assassin's Creed Valhalla is an action role-playing video game developed by Ubisoft Montreal and published by Ubisoft",
             price: 69.90,
-            platformids: [1],
-            categoryids: [1],
+            platformids: [1, 2, 5, 6, 7],
+            categoryids: [2],
             year: 2020
         }),
         headers: { 'Content-Type': 'application/json' }

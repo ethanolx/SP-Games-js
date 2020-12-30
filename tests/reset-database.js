@@ -1,8 +1,14 @@
+// Imports
 import mysql from 'mysql2';
 import fs from 'fs';
 import { promisify } from 'util';
+import { emptyCallback } from '../src/utils/callbacks.js';
 
+/**
+ * Resets data in database for testing
+ */
 export default async () => {
+    // Opens a temporary connection to reset the database
     const CONN = mysql.createConnection({
         host: 'localhost',
         user: 'ethan',
@@ -11,10 +17,15 @@ export default async () => {
         database: 'spgames',
         multipleStatements: true
     });
-    const RESET_SQL = await promisify(fs.readFile)('./sql/reset.sql').then(sql => sql.toString().replace(/[\r\n]/g, '')).catch(_ => { });
+    // Read SQL Query from reset.sql script
+    const RESET_SQL = await promisify(fs.readFile)('./sql/reset.sql')
+        .then(sql => sql.toString().replace(/[\r\n]/g, ''))
+        .catch(emptyCallback);
+
+    // Query the MySQL Database to reset it
     CONN.connect(connErr => {
         if (connErr) {
-            console.log(connErr);
+            throw connErr;
         }
         else {
             //@ts-ignore
@@ -24,5 +35,4 @@ export default async () => {
             });
         }
     });
-    return;
 };

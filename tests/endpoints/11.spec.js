@@ -6,7 +6,7 @@ import compareObjectToSignature from '../../src/utils/compare-object-to-signatur
 
 export default async () => {
     const MESSAGE = '11. GET     /game/:id/review';
-    return fetch(`http://${ HOST }:${ TEST_PORT }/game/2/review`)
+    return fetch(`http://${ HOST }:${ TEST_PORT }/game/1/review`)
         .then(res => (res.status === 200 ? res.json() : false))
         .then(
             /**

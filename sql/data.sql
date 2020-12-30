@@ -1,6 +1,5 @@
 -- populate with data --
 -- USE spgames;
-
 -- users table --
 DELETE FROM
     users;
@@ -123,7 +122,10 @@ INSERT INTO
 VALUES
     (1, 1),
     (1, 2),
-    (2, 1);
+    (1, 3),
+    (1, 4),
+    (2, 1),
+    (2, 2);
 
 -- game_category_asc table --
 DELETE FROM
