@@ -137,7 +137,7 @@ router.route('/game/:gid/image')
         const GAME_ID = parseInt(req.params.gid);
         const FILES = await findImagesOfGame(GAME_ID).catch(logError);
         const GAMES = await promisify(Games.findOne)(GAME_ID).catch(logError);
-        if (GAMES instanceof Array && GAMES.length === 0) {
+        if (GAMES === null) {
             res.status(422).json({ message: 'Game does not exist' });
         }
         else if (FILES) {
@@ -146,7 +146,6 @@ router.route('/game/:gid/image')
         else {
             res.sendStatus(404);
         }
-        return;
     })
     .post((req, res, next) => {
         const GAME_ID = parseInt(req.params.gid);
@@ -154,7 +153,7 @@ router.route('/game/:gid/image')
             if (err) {
                 res.sendStatus(500);
             }
-            else if ((result instanceof Array && result.length === 0) || result === null) {
+            else if (result === null) {
                 res.status(422).json({ message: 'Game does not exist' });
             }
             else {

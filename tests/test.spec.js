@@ -1,8 +1,9 @@
+// Imports
 import app from '../src/controllers/app.js';
 import { TEST_PORT } from '../src/config/server.config.js';
-
 import resetDatabase from "./reset-database.js";
 
+// Endpoint Specifications (base)
 import e1 from './endpoints/1.spec.js';
 import e2 from './endpoints/2.spec.js';
 import e3 from './endpoints/3.spec.js';

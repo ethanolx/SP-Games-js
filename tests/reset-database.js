@@ -11,8 +11,8 @@ export default async () => {
     // Opens a temporary connection to reset the database
     const CONN = mysql.createConnection({
         host: 'localhost',
-        user: 'ethan',
-        password: '12345Abc',
+        user: 'root',
+        password: 'password',
         port: 3306,
         database: 'spgames',
         multipleStatements: true

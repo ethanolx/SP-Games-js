@@ -14,25 +14,26 @@
 
 1. Install NodeJS locally (at least v14.0)
 2. Ensure npm is installed too (run `npm --version`)
-3. Install MySQL Server
-4. Set MySQL Server `root` password
-5. Run the following SQL Scripts (either 1 or 2):
+3. Run `npm install`
+4. Install MySQL Server locally
+5. Configure MySQL Server `root` account
+6. Run the following SQL Scripts (either 1 or 2) in MySQL Server:
     1. init.sql & data.sql
     2. dump.sql
-6. Navigate to 'SP Games' directory through command line
-7. Configure MySQL `root` configurations in the following files:
+7. Navigate to 'SP Games' directory through command line
+8. Configure MySQL `root` configurations in the following files:
     - `src/config/database.config.js`
     - `src/tests/reset-database.js`
-8. Configure Express Server API settings in the following file:
+9. Configure Express Server API settings in the following file:
     - `src/config/server.config.js`
 
 ### Run Program
 
-9. Run `npm start`
+10. Run `npm start`
 
 ### Run Tests
 
-9. Run `npm test`
+10. Run `npm test`
 
 ## File Structure
 
@@ -136,7 +137,8 @@
 7.  Game-Platform many-to-many relationship
 8.  Program testing
 9.  More specific error response codes (404, 415, 422, etc.)
-10. Code organisation and JSDoc annotations
+10. ES6 Import/Export Syntax
+11. JSDoc annotations
 
 ## See Also
 

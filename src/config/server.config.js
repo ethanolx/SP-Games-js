@@ -9,6 +9,6 @@ const MAX_HISTORY_LOGS = 15;
 
 // Image Upload Restrictions
 const MAX_FILE_SIZE = 1000000;
-const MEDIA_TYPES_SUPPORTED = ['.jpg', '.png', '.jpeg', '.gif'];
+const MEDIA_TYPES_SUPPORTED = ['.jpg', '.png', '.jpeg'];
 
 export { HOST, PORT, TEST_PORT, MAX_ERROR_LOGS, MAX_HISTORY_LOGS, MAX_FILE_SIZE, MEDIA_TYPES_SUPPORTED };
